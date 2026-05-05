@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>งบประมาณ 6 ยุทธศาสตร์ | ปี 2562–2568 | ฉบับที่ ๔ พ.ร.บ.</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f4f6fb;--bg2:#ffffff;--bg3:#eef1f7;--border:#d0d7e8;
+  --text:#1a1d2e;--text2:#5a6282;--accent:#2563eb;
+  --c1:#475569;--c2:#0891b2;--c3:#16a34a;--c4:#d97706;--c5:#0d9488;--c6:#7c3aed;
+}
+body{font-family:'Kanit',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+.header{background:linear-gradient(135deg,#1e3a8a 0%,#2563eb 60%,#3b82f6 100%);color:#fff;padding:20px 28px 18px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(37,99,235,.25)}
+.header h1{font-size:18px;font-weight:700;letter-spacing:.3px}
+.header p{font-size:12px;opacity:.8;margin-top:3px}
+.badge-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35)}
+.tabs{display:flex;background:var(--bg2);border-bottom:2px solid var(--border);overflow-x:auto;position:sticky;top:72px;z-index:99}
+.tab{padding:10px 16px;cursor:pointer;font-size:12.5px;font-weight:500;color:var(--text2);border-bottom:3px solid transparent;white-space:nowrap;transition:all .2s;font-family:'Kanit',sans-serif}
+.tab:hover{color:var(--text);background:var(--bg3)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent);background:var(--bg)}
+.tab-content{display:none;padding:20px}
+.tab-content.active{display:block}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.grid6{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px}
+.card-sm{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px}
+.section-title{font-size:14px;font-weight:600;color:var(--text);margin:20px 0 12px;display:flex;align-items:center;gap:8px}
+.dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.divider{border:none;border-top:1px solid var(--border);margin:18px 0}
+.kpi-box{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;text-align:center}
+.kpi-label{font-size:11px;color:var(--text2);margin-bottom:4px}
+.kpi-value{font-size:22px;font-weight:700;line-height:1.15}
+.kpi-sub{font-size:10px;color:var(--text2);margin-top:3px}
+.chart-wrap{position:relative;margin-top:8px}
+.chart-h200{height:200px}.chart-h240{height:240px}.chart-h260{height:260px}.chart-h300{height:300px}.chart-h320{height:320px}
+.chart-title{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;text-align:center}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{background:var(--bg3);padding:7px 10px;text-align:left;font-weight:600;color:var(--text);border-bottom:2px solid var(--border)}
+td{padding:6px 10px;border-bottom:1px solid var(--border);color:var(--text)}
+tr:hover td{background:var(--bg3)}
+.num{text-align:right;font-weight:500}.bold{font-weight:600}
+.highlight{background:rgba(37,99,235,.06)!important}
+.tag{display:inline-block;padding:2px 8px;border-radius:12px;font-size:10.5px;font-weight:500}
+.strat-card{border-left:5px solid;border-radius:10px;background:var(--bg2);border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:14px}
+.trend-up{color:#16a34a}.trend-dn{color:#dc2626}.trend-nt{color:#d97706}
+@media(max-width:900px){.grid2,.grid3,.grid4,.grid6{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.grid2,.grid3,.grid4,.grid6{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📊 งบประมาณรายจ่าย 6 ยุทธศาสตร์ | ฉบับที่ ๔ จำแนกตามโครงสร้างแผนงานตามยุทธศาสตร์</h1>
+  <p>พ.ร.บ. งบประมาณรายจ่ายประจำปี ปี 2562–2568 | ที่มา: สำนักงบประมาณ bb.go.th</p>
+  <div class="badge-row">
+    <span class="badge">📅 ข้อมูล 7 ปีย้อนหลัง (2562–2568)</span>
+    <span class="badge">💰 งบรวม 2568: 3,752,700 ล้านบาท</span>
+    <span class="badge">🔼 y4 สูงสุด: 926,267 ล้านบาท</span>
+    <span class="badge">📉 y5 ต่ำสุด: 136,851 ล้านบาท</span>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('overview',this)">ภาพรวม 2568</div>
+  <div class="tab" onclick="showTab('trend',this)">📈 แนวโน้ม 7 ปี</div>
+  <div class="tab" onclick="showTab('y1',this)">ย.1 ความมั่นคง</div>
+  <div class="tab" onclick="showTab('y2',this)">ย.2 แข่งขัน</div>
+  <div class="tab" onclick="showTab('y3',this)">ย.3 ทรัพยากรมนุษย์</div>
+  <div class="tab" onclick="showTab('y4',this)">ย.4 โอกาส–เสมอภาค</div>
+  <div class="tab" onclick="showTab('y5',this)">ย.5 สิ่งแวดล้อม</div>
+  <div class="tab" onclick="showTab('y6',this)">ย.6 บริหารภาครัฐ</div>
+</div>
+
+<!-- ================================================================ -->
+<!-- TAB 1: OVERVIEW 2568                                              -->
+<!-- ================================================================ -->
+<div id="overview" class="tab-content active">
+
+  <div class="grid6" style="margin-bottom:16px">
+    <div class="kpi-box" style="border-top:4px solid var(--c1)">
+      <div class="kpi-label">ย.1 ความมั่นคง</div>
+      <div class="kpi-value" style="color:var(--c1)">403,868</div>
+      <div class="kpi-sub">ล้านบาท (10.8%)</div>
+    </div>
+    <div class="kpi-box" style="border-top:4px solid var(--c2)">
+      <div class="kpi-label">ย.2 สร้างความสามารถแข่งขัน</div>
+      <div class="kpi-value" style="color:var(--c2)">362,200</div>
+      <div class="kpi-sub">ล้านบาท (9.7%)</div>
+    </div>
+    <div class="kpi-box" style="border-top:4px solid var(--c3)">
+      <div class="kpi-label">ย.3 พัฒนาทรัพยากรมนุษย์</div>
+      <div class="kpi-value" style="color:var(--c3)">582,704</div>
+      <div class="kpi-sub">ล้านบาท (15.5%)</div>
+    </div>
+    <div class="kpi-box" style="border-top:4px solid var(--c4)">
+      <div class="kpi-label">ย.4 สร้างโอกาส–เสมอภาค</div>
+      <div class="kpi-value" style="color:var(--c4)">926,267</div>
+      <div class="kpi-sub">ล้านบาท (24.7%) 🔼</div>
+    </div>
+    <div class="kpi-box" style="border-top:4px solid var(--c5)">
+      <div class="kpi-label">ย.5 สิ่งแวดล้อม–ยั่งยืน</div>
+      <div class="kpi-value" style="color:var(--c5)">136,851</div>
+      <div class="kpi-sub">ล้านบาท (3.6%) 🔽</div>
+    </div>
+    <div class="kpi-box" style="border-top:4px solid var(--c6)">
+      <div class="kpi-label">ย.6 ปรับสมดุลภาครัฐ</div>
+      <div class="kpi-value" style="color:var(--c6)">645,500</div>
+      <div class="kpi-sub">ล้านบาท (17.2%)</div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="chart-title">สัดส่วนงบ 6 ยุทธศาสตร์ ปี 2568 (% จากงบยุทธศาสตร์รวม)</div>
+      <div class="chart-wrap chart-h300"><canvas id="ch_pie68"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="chart-title">งบ 6 ยุทธศาสตร์ ปี 2568 เทียบปี 2567 (ล้านบาท)</div>
+      <div class="chart-wrap chart-h300"><canvas id="ch_cmp6768"></canvas></div>
+    </div>
+  </div>
+
+  <hr class="divider">
+  <div class="section-title"><span class="dot" style="background:#2563eb"></span>สรุปงบ 6 ยุทธศาสตร์ ปี 2562–2568</div>
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>ยุทธศาสตร์</th>
+          <th class="num">2562</th>
+          <th class="num">2563</th>
+          <th class="num">2564</th>
+          <th class="num">2565</th>
+          <th class="num">2566</th>
+          <th class="num">2567</th>
+          <th class="num">2568</th>
+          <th class="num">เปลี่ยนแปลง 7 ปี</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="tag" style="background:rgba(71,85,105,.12);color:var(--c1)">ย.1</span> ความมั่นคง</td>
+          <td class="num">321,790</td><td class="num">425,514</td><td class="num">406,470</td>
+          <td class="num">383,798</td><td class="num">292,594</td><td class="num">386,150</td>
+          <td class="num bold">403,868</td>
+          <td class="num trend-up">+25.5%</td>
+        </tr>
+        <tr>
+          <td><span class="tag" style="background:rgba(8,145,178,.12);color:var(--c2)">ย.2</span> สร้างความสามารถแข่งขัน</td>
+          <td class="num">408,039</td><td class="num">375,034</td><td class="num">394,588</td>
+          <td class="num">332,134</td><td class="num">397,239</td><td class="num">392,029</td>
+          <td class="num bold">362,200</td>
+          <td class="num trend-dn">−11.2%</td>
+        </tr>
+        <tr>
+          <td><span class="tag" style="background:rgba(22,163,74,.12);color:var(--c3)">ย.3</span> พัฒนาทรัพยากรมนุษย์</td>
+          <td class="num">561,134</td><td class="num">567,944</td><td class="num">579,388</td>
+          <td class="num">545,568</td><td class="num">544,456</td><td class="num">561,167</td>
+          <td class="num bold">582,704</td>
+          <td class="num trend-up">+3.8%</td>
+        </tr>
+        <tr>
+          <td><span class="tag" style="background:rgba(217,119,6,.12);color:var(--c4)">ย.4</span> สร้างโอกาส–เสมอภาค</td>
+          <td class="num">396,717</td><td class="num">776,111</td><td class="num">800,633</td>
+          <td class="num">731,707</td><td class="num">767,403</td><td class="num">836,383</td>
+          <td class="num bold">926,267</td>
+          <td class="num trend-up">+133.5%</td>
+        </tr>
+        <tr>
+          <td><span class="tag" style="background:rgba(13,148,136,.12);color:var(--c5)">ย.5</span> สิ่งแวดล้อม–ยั่งยืน</td>
+          <td class="num">116,232</td><td class="num">117,467</td><td class="num">116,032</td>
+          <td class="num">119,107</td><td class="num">122,606</td><td class="num">131,020</td>
+          <td class="num bold">136,851</td>
+          <td class="num trend-up">+17.8%</td>
+        </tr>
+        <tr>
+          <td><span class="tag" style="background:rgba(124,58,237,.12);color:var(--c6)">ย.6</span> ปรับสมดุลภาครัฐ</td>
+          <td class="num">836,978</td><td class="num">506,593</td><td class="num">555,571</td>
+          <td class="num">558,616</td><td class="num">658,185</td><td class="num">608,211</td>
+          <td class="num bold">645,500</td>
+          <td class="num trend-dn">−22.9%</td>
+        </tr>
+        <tr class="highlight">
+          <td class="bold">รวมงบยุทธศาสตร์</td>
+          <td class="num bold">2,640,890</td><td class="num bold">2,768,663</td><td class="num bold">2,852,682</td>
+          <td class="num bold">2,670,930</td><td class="num bold">2,782,483</td><td class="num bold">2,914,960</td>
+          <td class="num bold">3,057,390</td>
+          <td class="num bold trend-up">+15.8%</td>
+        </tr>
+        <tr>
+          <td class="bold">งบรวมประเทศ</td>
+          <td class="num bold">3,000,000</td><td class="num bold">3,200,000</td><td class="num bold">3,285,962</td>
+          <td class="num bold">3,100,000</td><td class="num bold">3,185,000</td><td class="num bold">3,480,000</td>
+          <td class="num bold">3,752,700</td>
+          <td class="num bold trend-up">+25.1%</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="font-size:10.5px;color:var(--text2);margin-top:8px">หน่วย: ล้านบาท | * ปี 2562 ย.4 ต่ำผิดปกติเนื่องจากโครงสร้างยุทธศาสตร์เพิ่งเริ่มใช้, ย.6 สูงเพราะรวมค่าใช้จ่ายบุคลากร | ปี 2565: ย.3 ประมาณจาก pdftotext</div>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- TAB 2: TREND                                                       -->
+<!-- ================================================================ -->
+<div id="trend" class="tab-content">
+
+  <div class="grid4" style="margin-bottom:16px">
+    <div class="kpi-box">
+      <div class="kpi-label">งบรวมประเทศ 2568</div>
+      <div class="kpi-value" style="color:#2563eb">3.75 ล้านล้าน</div>
+      <div class="kpi-sub">+25.1% จากปี 2562</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-label">ยุทธศาสตร์โตสูงสุด (7 ปี)</div>
+      <div class="kpi-value" style="color:var(--c4)">ย.4 +134%</div>
+      <div class="kpi-sub">สร้างโอกาส–เสมอภาคทางสังคม</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-label">ยุทธศาสตร์ลดลงมากสุด (7 ปี)</div>
+      <div class="kpi-value" style="color:#dc2626">ย.6 −23%</div>
+      <div class="kpi-sub">ปรับสมดุลภาครัฐ (2562 สูงผิดปกติ)</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-label">งบขั้นพื้นฐาน+ดำเนินการ 2568</div>
+      <div class="kpi-value" style="color:var(--text2)">695,310</div>
+      <div class="kpi-sub">ล้านบาท (นอกยุทธศาสตร์)</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="chart-title">งบ 6 ยุทธศาสตร์ แนวโน้มรายปี 2562–2568 (ล้านบาท)</div>
+    <div class="chart-wrap chart-h320"><canvas id="ch_trend_line"></canvas></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="chart-title">Stacked Bar — สัดส่วน 6 ยุทธศาสตร์ต่องบรวมประเทศ รายปี</div>
+      <div class="chart-wrap chart-h260"><canvas id="ch_stack"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="chart-title">อัตราการเปลี่ยนแปลง YoY ปี 2568 เทียบปี 2567 (%)</div>
+      <div class="chart-wrap chart-h260"><canvas id="ch_yoy"></canvas></div>
+    </div>
+  </div>
+
+  <hr class="divider">
+  <div class="section-title"><span class="dot" style="background:#2563eb"></span>สัดส่วน % ต่องบรวมประเทศ รายปี</div>
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>ยุทธศาสตร์</th>
+          <th class="num">2562</th><th class="num">2563</th><th class="num">2564</th>
+          <th class="num">2565</th><th class="num">2566</th><th class="num">2567</th><th class="num">2568</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>ย.1 ความมั่นคง</td><td class="num">10.7%</td><td class="num">13.3%</td><td class="num">12.4%</td><td class="num">12.4%</td><td class="num">9.2%</td><td class="num">11.1%</td><td class="num bold">10.8%</td></tr>
+        <tr><td>ย.2 แข่งขัน</td><td class="num">13.6%</td><td class="num">11.7%</td><td class="num">12.0%</td><td class="num">10.7%</td><td class="num">12.5%</td><td class="num">11.3%</td><td class="num bold">9.7%</td></tr>
+        <tr><td>ย.3 ทรัพยากรมนุษย์</td><td class="num">18.7%</td><td class="num">17.7%</td><td class="num">17.6%</td><td class="num">17.6%</td><td class="num">17.1%</td><td class="num">16.1%</td><td class="num bold">15.5%</td></tr>
+        <tr><td>ย.4 โอกาส–เสมอภาค</td><td class="num">13.2%</td><td class="num">24.3%</td><td class="num">24.4%</td><td class="num">23.6%</td><td class="num">24.1%</td><td class="num">24.0%</td><td class="num bold">24.7%</td></tr>
+        <tr><td>ย.5 สิ่งแวดล้อม</td><td class="num">3.9%</td><td class="num">3.7%</td><td class="num">3.5%</td><td class="num">3.8%</td><td class="num">3.9%</td><td class="num">3.8%</td><td class="num bold">3.6%</td></tr>
+        <tr><td>ย.6 ภาครัฐ</td><td class="num">27.9%</td><td class="num">15.8%</td><td class="num">16.9%</td><td class="num">18.0%</td><td class="num">20.7%</td><td class="num">17.5%</td><td class="num bold">17.2%</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- TAB 3–8: INDIVIDUAL STRATEGIES                                    -->
+<!-- ================================================================ -->
+
+<!-- Y1 -->
+<div id="y1" class="tab-content">
+  <div class="strat-card" style="border-color:var(--c1);margin-bottom:16px">
+    <div style="font-size:15px;font-weight:700;color:var(--c1)">ยุทธศาสตร์ที่ 1 — ด้านความมั่นคง</div>
+    <div style="font-size:12px;color:var(--text2);margin-top:4px">Security Strategy | ครอบคลุม: ความมั่นคงของสถาบัน / ป้องกันประเทศ / ยาเสพติด / ชายแดน / ต่างประเทศ</div>
+    <div class="grid4" style="margin-top:14px">
+      <div><div style="font-size:11px;color:var(--text2)">งบ 2568</div><div style="font-size:20px;font-weight:700;color:var(--c1)">403,868 <span style="font-size:13px">ล้านบาท</span></div></div>
+      <div><div style="font-size:11px;color:var(--text2)">สัดส่วน 2568</div><div style="font-size:20px;font-weight:700;color:var(--c1)">10.8%</div></div>
+      <div><div style="font-size:11px;color:var(--text2)">เปลี่ยนแปลง vs 2567</div><div style="font-size:20px;font-weight:700;color:#16a34a">+4.6%</div></div>
+      <div><div style="font-size:11px;color:var(--text2)">การเติบโต 7 ปี</div><div style="font-size:20px;font-weight:700;color:#16a34a">+25.5%</div></div>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="chart-title">ย.1 ความมั่นคง — งบรายปี 2562–2568 (ล้านบาท)</div>
+      <div class="chart-wrap chart-h260"><canvas id="ch_y1_trend"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="chart-title">ย.1 สัดส่วนต่องบรวมประเทศ (%)</div>
+      <div class="chart-wrap chart-h260"><canvas id="ch_y1_pct"></canvas></div>
+    </div>
+  </div>
+  <hr class="divider">
+  <div class="card">
+    <table>
+      <thead><tr><th>ปี</th><th class="num">งบ ย.1 (ล้านบาท)</th><th class="num">งบรวม</th><th class="num">สัดส่วน</th><th class="num">YoY</th></tr></thead>
+      <tbody>
+        <tr><td>2562</td><td class="num">321,790</td><td class="num">3,000,000</td><td class="num">10.7%</td><td class="num">—</td></tr>
+        <tr><td>2563</td><td class="num">425,514</td><td class="num">3,200,000</td><td class="num">13.3%</td><td class="num trend-up">+32.2%</td></tr>
+        <tr><td>2564</td><td class="num">406,470</td><td class="num">3,285,962</td><td class="num">12.4%</td><td class="num trend-dn">−4.5%</td></tr>
+        <tr><td>2565</td><td class="num">383,798</td><td class="num">3,100,000</td><td class="num">12.4%</td><td class="num trend-dn">−5.6%</td></tr>
+        <tr><td>2566</td><td class="num">292,594</td><td class="num">3,185,000</td><td class="num">9.2%</td><td class="num trend-dn">−23.8%</td></tr>
+        <tr><td>2567</td><td class="num">386,150</td><td class="num">3,480,000</td><td class="num">11.1%</td><td class="num trend-up">+32.0%</td></tr>
+        <tr class="highlight"><td><b>2568</b></td><td class="num bold">403,868</td><td class="num bold">3,752,700</td><td class="num bold">10.8%</td><td class="num trend-up">+4.6%</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Y2 -->
+<div id="y2" class="tab-content">
+  <div class="strat-card" style="border-color:var(--c2);margin-bottom:16px">
+    <div style="font-size:15px;font-weight:700;color:var(--c2)">ยุทธศาสตร์ที่ 2 — ด้านการสร้างความสามารถในการแข่งขัน</div>
+    <div style="font-size:12px;color:var(--text2);margin-top:4px">Competitiveness Strategy | ครอบคลุม: เกษตร / อุตสาหกรรม / การท่องเที่ยว / SME / นวัตกรรม / แรงงาน / พัฒนาทักษะ</div>
+    <div class="grid4" style="margin-top:14px">
+      <div><div style="font-size:11px;color:var(--text2)">งบ 2568</div><div style="font-size:20px;font-weight:700;color:var(--c2)">362,200 <span style="font-size:13px">ล้านบาท</span></div></div>
+      <div><div style="font-size:11px;color:var(--text2)">สัดส่วน 2568</div><div style="font-size:20px;font-weight:700;color:var(--c2)">9.7%</div></div>
+      <div><div style="font-size:11px;color:var(--text2)">เปลี่ยนแปลง vs 2567</div><div style="font-size:20px;font-weight:700;color:#dc2626">−7.6%</div></div>
+      <div><div style="font-size:11px;color:var(--text2)">การเติบโต 7 ปี</div><div style="font-size:20px;font-weight:700;color:#dc2626">−11.2%</div></div>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="chart-title">ย.2 แข่งขัน — งบรายปี 2562–2568</div>
+      <div class="chart-wrap chart-h260"><canvas id="ch_y2_trend"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="chart-title">ย.2 สัดส่วนต่องบรวมประเทศ (%)</div>
+      <div class="chart-wrap chart-h260"><canvas id="ch_y2_pct"></canvas></div>
+    </div>
+  </div>
+  <hr class="divider">
+  <div class="card">
+    <table>
+      <thead><tr><th>ปี</th><th class="num">งบ ย.2 (ล้านบาท)</th><th class="num">งบรวม</th><th class="num">สัดส่วน</th><th class="num">YoY</th></tr></thead>
+      <tbody>
+        <tr><td>2562</td><td class="num">408,039</td><td class="num">3,000,000</td><td class="num">13.6%</td><td class="num">—</td></tr>
+        <tr><td>2563</td><td class="num">375,034</td><td class="num">3,200,000</td><td class="num">11.7%</td><td class="num trend-dn">−8.1%</td></tr>
+        <tr><td>2564</td><td class="num">394,588</td><td class="num">3,285,962</td><td class="num">12.0%</td><td class="num trend-up">+5.2%</td></tr>
+        <tr><td>2565</td><td class="num">332,134</td><td class="num">3,100,000</td><td class="num">10.7%</td><td class="num trend-dn">−15.8%</td></tr>
+        <tr><td>2566</td><td class="num">397,239</td><td class="num">3,185,000</td><td class="num">12.5%</td><td class="num trend-up">+19.6%</td></tr>
+        <tr><td>2567</td><td class="num">392,029</td><td class="num">3,480,000</td><td class="num">11.3%</td><td class="num trend-dn">−1.3%</td></tr>
+        <tr class="highlight"><td><b>2568</b></td><td class="num bold">362,200</td><td class="num bold">3,752,700</td><td class="num bold">9.7%</td><td class="num trend-dn">−7.6%</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Y3 -->
+<div id="y3" class="tab-content">
+  <div class="strat-card" style="border-color:var(--c3);margin-bottom:16px">
+    <div style="font-size:15px;font-weight:700;color:var(--c3)">ยุทธศาสตร์ที่ 3 — ด้านการพัฒนาและเสริมสร้างศักยภาพทรัพยากรมนุษย์</div>
+    <div style="font-size:12px;color:var(--text2);margin-top:4px">Human Capital Strategy | ครอบคลุม: การศึกษา / สาธารณสุข / กีฬา / ศาสนาและวัฒนธรรม / พัฒนาบุคลากร</div>
+    <div class="grid4" style="margin-top:14px">
+      <div><div style="font-size:11px;color:var(--text2)">งบ 2568</div><div style="font-size:20px;font-weight:700;color:var(--c3)">582,704 <span style="font-size:13px">ล้านบาท</span></div></div>
+      <div><div style="font-size:11px;color:var(--text2)">สัดส่วน 2568</div><div style="font-size:20px;font-weight:700;color:var(--c3)">15.5%</div></div>
+      <div><div style="font-size:11px;color:var(--text2)">เปลี่ยนแปลง vs 2567</div><div style="font-size:20px;font-weight:700;color:#16a34a">+3.8%</div></div>
+      <div><div style="font-size:11px;color:var(--text2)">ปี 2569 (ล่าสุด)</div><div style="font-size:20px;font-weight:700;color:#16a34a">604,806</div></div>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="chart-title">ย.3 ทรัพยากรมนุษย์ — งบรายปี 2562–2568</div>
+      <div class="chart-wrap chart-h260"><canvas id="ch_y3_trend"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="chart-title">ย.3 สัดส่วนต่องบรวมประเทศ (%)</div>
+      <div class="chart-wrap chart-h260"><canvas id="ch_y3_pct"></canvas></div>
+    </div>
+  </div>
+  <hr class="divider">
+  <div class="card">
+    <table>
+      <thead><tr><th>ปี</th><th class="num">งบ ย.3 (ล้านบาท)</th><th class="num">งบรวม</th><th class="num">สัดส่วน</th><th class="num">YoY</th></tr></thead>
+      <tbody>
+        <tr><td>2562</td><td class="num">561,134</td><td class="num">3,000,000</td><td class="num">18.7%</td><td class="num">—</td></tr>
+        <tr><td>2563</td><td class="num">567,944</td><td class="num">3,200,000</td><td class="num">17.7%</td><td class="num trend-up">+1.2%</td></tr>
+        <tr><td>2564</td><td class="num">579,388</td><td class="num">3,285,962</td><td class="num">17.6%</td><td class="num trend-up">+2.0%</td></tr>
+        <tr><td>2565</td><td class="num">545,568 *</td><td class="num">3,100,000</td><td class="num">17.6%</td><td class="num trend-dn">−5.8%</td></tr>
+        <tr><td>2566</td><td class="num">544,456</td><td class="num">3,185,000</td><td class="num">17.1%</td><td class="num trend-dn">−0.2%</td></tr>
+        <tr><td>2567</td><td class="num">561,167</td><td class="num">3,480,000</td><td class="num">16.1%</td><td class="num trend-up">+3.1%</td></tr>
+        <tr class="highlight"><td><b>2568</b></td><td class="num bold">582,704</td><td class="num bold">3,752,700</td><td class="num bold">15.5%</td><td class="num trend-up">+3.8%</td></tr>
+        <tr style="background:rgba(22,163,74,.06)"><td><b>2569</b> (ref)</td><td class="num bold" style="color:#16a34a">604,806</td><td class="num bold">3,780,600</td><td class="num bold">16.0%</td><td class="num trend-up">+3.8%</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:10.5px;color:var(--text2);margin-top:6px">* ปี 2565 ประมาณจาก pdftotext | ปี 2569 จากการวิเคราะห์ฉบับที่ ๔ พ.ร.บ. งบประมาณ 2569</div>
+  </div>
+</div>
+
+<!-- Y4 -->
+<div id="y4" class="tab-content">
+  <div class="strat-card" style="border-color:var(--c4);margin-bottom:16px">
+    <div style="font-size:15px;font-weight:700;color:var(--c4)">ยุทธศาสตร์ที่ 4 — ด้านการสร้างโอกาสและความเสมอภาคทางสังคม</div>
+    <div style="font-size:12px;color:var(--text2);margin-top:4px">Social Equity Strategy | ครอบคลุม: สังคมสูงวัย / กลุ่มเปราะบาง / ความเท่าเทียม / ชุมชน / พัฒนาสังคม</div>
+    <div class="grid4" style="margin-top:14px">
+      <div><div style="font-size:11px;color:var(--text2)">งบ 2568</div><div style="font-size:20px;font-weight:700;color:var(--c4)">926,267 <span style="font-size:13px">ล้านบาท</span></div></div>
+      <div><div style="font-size:11px;color:var(--text2)">สัดส่วน 2568</div><div style="font-size:20px;font-weight:700;color:var(--c4)">24.7%</div></div>
+      <div><div style="font-size:11px;color:var(--text2)">เปลี่ยนแปลง vs 2567</div><div style="font-size:20px;font-weight:700;color:#16a34a">+10.7%</div></div>
+      <div><div style="font-size:11px;color:var(--text2)">การเติบโต 7 ปี</div><div style="font-size:20px;font-weight:700;color:#16a34a">+133.5%</div></div>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="chart-title">ย.4 โอกาส–เสมอภาค — งบรายปี 2562–2568</div>
+      <div class="chart-wrap chart-h260"><canvas id="ch_y4_trend"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="chart-title">ย.4 สัดส่วนต่องบรวมประเทศ (%)</div>
+      <div class="chart-wrap chart-h260"><canvas id="ch_y4_pct"></canvas></div>
+    </div>
+  </div>
+  <hr class="divider">
+  <div class="card">
+    <table>
+      <thead><tr><th>ปี</th><th class="num">งบ ย.4 (ล้านบาท)</th><th class="num">งบรวม</th><th class="num">สัดส่วน</th><th class="num">YoY</th></tr></thead>
+      <tbody>
+        <tr><td>2562 †</td><td class="num">396,717</td><td class="num">3,000,000</td><td class="num">13.2%</td><td class="num">—</td></tr>
+        <tr><td>2563</td><td class="num">776,111</td><td class="num">3,200,000</td><td class="num">24.3%</td><td class="num trend-up">+95.6%</td></tr>
+        <tr><td>2564</td><td class="num">800,633</td><td class="num">3,285,962</td><td class="num">24.4%</td><td class="num trend-up">+3.2%</td></tr>
+        <tr><td>2565</td><td class="num">731,707</td><td class="num">3,100,000</td><td class="num">23.6%</td><td class="num trend-dn">−8.6%</td></tr>
+        <tr><td>2566</td><td class="num">767,403</td><td class="num">3,185,000</td><td class="num">24.1%</td><td class="num trend-up">+4.9%</td></tr>
+        <tr><td>2567</td><td class="num">836,383</td><td class="num">3,480,000</td><td class="num">24.0%</td><td class="num trend-up">+9.0%</td></tr>
+        <tr class="highlight"><td><b>2568</b></td><td class="num bold">926,267</td><td class="num bold">3,752,700</td><td class="num bold">24.7%</td><td class="num trend-up">+10.7%</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:10.5px;color:var(--text2);margin-top:6px">† ปี 2562 ต่ำผิดปกติ — อาจสะท้อนการเริ่มใช้ยุทธศาสตร์ชาติ (บางรายการยังอยู่ใน ย.6)</div>
+  </div>
+</div>
+
+<!-- Y5 -->
+<div id="y5" class="tab-content">
+  <div class="strat-card" style="border-color:var(--c5);margin-bottom:16px">
+    <div style="font-size:15px;font-weight:700;color:var(--c5)">ยุทธศาสตร์ที่ 5 — ด้านการสร้างการเติบโตบนคุณภาพชีวิตที่เป็นมิตรกับสิ่งแวดล้อม</div>
+    <div style="font-size:12px;color:var(--text2);margin-top:4px">Green Growth Strategy | ครอบคลุม: การเติบโตอย่างยั่งยืน / บริหารจัดการน้ำ / ลดโลกร้อน / พลังงานสะอาด</div>
+    <div class="grid4" style="margin-top:14px">
+      <div><div style="font-size:11px;color:var(--text2)">งบ 2568</div><div style="font-size:20px;font-weight:700;color:var(--c5)">136,851 <span style="font-size:13px">ล้านบาท</span></div></div>
+      <div><div style="font-size:11px;color:var(--text2)">สัดส่วน 2568</div><div style="font-size:20px;font-weight:700;color:var(--c5)">3.6%</div></div>
+      <div><div style="font-size:11px;color:var(--text2)">เปลี่ยนแปลง vs 2567</div><div style="font-size:20px;font-weight:700;color:#16a34a">+4.4%</div></div>
+      <div><div style="font-size:11px;color:var(--text2)">การเติบโต 7 ปี</div><div style="font-size:20px;font-weight:700;color:#16a34a">+17.8%</div></div>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="chart-title">ย.5 สิ่งแวดล้อม — งบรายปี 2562–2568</div>
+      <div class="chart-wrap chart-h260"><canvas id="ch_y5_trend"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="chart-title">ย.5 สัดส่วนต่องบรวมประเทศ (%) — ต่ำและค่อนข้างคงที่</div>
+      <div class="chart-wrap chart-h260"><canvas id="ch_y5_pct"></canvas></div>
+    </div>
+  </div>
+  <hr class="divider">
+  <div class="card">
+    <table>
+      <thead><tr><th>ปี</th><th class="num">งบ ย.5 (ล้านบาท)</th><th class="num">งบรวม</th><th class="num">สัดส่วน</th><th class="num">YoY</th></tr></thead>
+      <tbody>
+        <tr><td>2562</td><td class="num">116,232</td><td class="num">3,000,000</td><td class="num">3.9%</td><td class="num">—</td></tr>
+        <tr><td>2563</td><td class="num">117,467</td><td class="num">3,200,000</td><td class="num">3.7%</td><td class="num trend-up">+1.1%</td></tr>
+        <tr><td>2564</td><td class="num">116,032</td><td class="num">3,285,962</td><td class="num">3.5%</td><td class="num trend-dn">−1.2%</td></tr>
+        <tr><td>2565</td><td class="num">119,107</td><td class="num">3,100,000</td><td class="num">3.8%</td><td class="num trend-up">+2.7%</td></tr>
+        <tr><td>2566</td><td class="num">122,606</td><td class="num">3,185,000</td><td class="num">3.9%</td><td class="num trend-up">+2.9%</td></tr>
+        <tr><td>2567</td><td class="num">131,020</td><td class="num">3,480,000</td><td class="num">3.8%</td><td class="num trend-up">+6.9%</td></tr>
+        <tr class="highlight"><td><b>2568</b></td><td class="num bold">136,851</td><td class="num bold">3,752,700</td><td class="num bold">3.6%</td><td class="num trend-up">+4.4%</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Y6 -->
+<div id="y6" class="tab-content">
+  <div class="strat-card" style="border-color:var(--c6);margin-bottom:16px">
+    <div style="font-size:15px;font-weight:700;color:var(--c6)">ยุทธศาสตร์ที่ 6 — ด้านการปรับสมดุลและพัฒนาระบบการบริหารจัดการภาครัฐ</div>
+    <div style="font-size:12px;color:var(--text2);margin-top:4px">Public Governance Strategy | ครอบคลุม: บุคลากรภาครัฐ / กระจายอำนาจ / ป้องกันทุจริต / ระบบราชการ / Digital Government</div>
+    <div class="grid4" style="margin-top:14px">
+      <div><div style="font-size:11px;color:var(--text2)">งบ 2568</div><div style="font-size:20px;font-weight:700;color:var(--c6)">645,500 <span style="font-size:13px">ล้านบาท</span></div></div>
+      <div><div style="font-size:11px;color:var(--text2)">สัดส่วน 2568</div><div style="font-size:20px;font-weight:700;color:var(--c6)">17.2%</div></div>
+      <div><div style="font-size:11px;color:var(--text2)">เปลี่ยนแปลง vs 2567</div><div style="font-size:20px;font-weight:700;color:#16a34a">+6.1%</div></div>
+      <div><div style="font-size:11px;color:var(--text2)">ปี 2562 (ผิดปกติสูง)</div><div style="font-size:20px;font-weight:700;color:#dc2626">836,978</div></div>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="chart-title">ย.6 ภาครัฐ — งบรายปี 2562–2568</div>
+      <div class="chart-wrap chart-h260"><canvas id="ch_y6_trend"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="chart-title">ย.6 สัดส่วนต่องบรวมประเทศ (%)</div>
+      <div class="chart-wrap chart-h260"><canvas id="ch_y6_pct"></canvas></div>
+    </div>
+  </div>
+  <hr class="divider">
+  <div class="card">
+    <table>
+      <thead><tr><th>ปี</th><th class="num">งบ ย.6 (ล้านบาท)</th><th class="num">งบรวม</th><th class="num">สัดส่วน</th><th class="num">YoY</th></tr></thead>
+      <tbody>
+        <tr><td>2562 †</td><td class="num">836,978</td><td class="num">3,000,000</td><td class="num">27.9%</td><td class="num">—</td></tr>
+        <tr><td>2563</td><td class="num">506,593</td><td class="num">3,200,000</td><td class="num">15.8%</td><td class="num trend-dn">−39.5%</td></tr>
+        <tr><td>2564</td><td class="num">555,571</td><td class="num">3,285,962</td><td class="num">16.9%</td><td class="num trend-up">+9.7%</td></tr>
+        <tr><td>2565</td><td class="num">558,616</td><td class="num">3,100,000</td><td class="num">18.0%</td><td class="num trend-up">+0.5%</td></tr>
+        <tr><td>2566</td><td class="num">658,185</td><td class="num">3,185,000</td><td class="num">20.7%</td><td class="num trend-up">+17.8%</td></tr>
+        <tr><td>2567</td><td class="num">608,211</td><td class="num">3,480,000</td><td class="num">17.5%</td><td class="num trend-dn">−7.6%</td></tr>
+        <tr class="highlight"><td><b>2568</b></td><td class="num bold">645,500</td><td class="num bold">3,752,700</td><td class="num bold">17.2%</td><td class="num trend-up">+6.1%</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:10.5px;color:var(--text2);margin-top:6px">† ปี 2562 สูงผิดปกติ เนื่องจากรวมค่าใช้จ่ายบุคลากรภาครัฐก่อนปรับโครงสร้างการจำแนก</div>
+  </div>
+</div>
+
+<!-- ================================================================ -->
+<!-- SCRIPTS                                                            -->
+<!-- ================================================================ -->
+<script>
+const TC='#5a6282', GC='rgba(0,0,0,.06)';
+const YEARS=['2562','2563','2564','2565','2566','2567','2568'];
+
+// Data arrays
+const Y1=[321790,425514,406470,383798,292594,386150,403868];
+const Y2=[408039,375034,394588,332134,397239,392029,362200];
+const Y3=[561134,567944,579388,545568,544456,561167,582704];
+const Y4=[396717,776111,800633,731707,767403,836383,926267];
+const Y5=[116232,117467,116032,119107,122606,131020,136851];
+const Y6=[836978,506593,555571,558616,658185,608211,645500];
+const TOT=[3000000,3200000,3285962,3100000,3185000,3480000,3752700];
+
+const COLORS={y1:'#475569',y2:'#0891b2',y3:'#16a34a',y4:'#d97706',y5:'#0d9488',y6:'#7c3aed'};
+const ALPHA={y1:'rgba(71,85,105,.7)',y2:'rgba(8,145,178,.7)',y3:'rgba(22,163,74,.7)',
+             y4:'rgba(217,119,6,.7)',y5:'rgba(13,148,136,.7)',y6:'rgba(124,58,237,.7)'};
+
+function showTab(id, btn){
+  document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+const baseCfg={responsive:true,maintainAspectRatio:false,
+  plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.parsed.y?.toLocaleString('th-TH')+'  ล้านบาท'}}}};
+
+// ===== TAB 1: PIE 2568 =====
+new Chart(document.getElementById('ch_pie68'),{
+  type:'doughnut',
+  data:{
+    labels:['ย.1 ความมั่นคง','ย.2 แข่งขัน','ย.3 ทรัพยากรมนุษย์','ย.4 โอกาส–เสมอภาค','ย.5 สิ่งแวดล้อม','ย.6 ภาครัฐ'],
+    datasets:[{data:[403868,362200,582704,926267,136851,645500],
+      backgroundColor:Object.values(ALPHA),borderWidth:2,borderColor:'#fff'}]
+  },
+  options:{responsive:true,maintainAspectRatio:false,cutout:'52%',
+    plugins:{legend:{display:true,position:'right',labels:{font:{family:'Kanit',size:11},color:TC,boxWidth:12}},
+      tooltip:{callbacks:{label:ctx=>` ${ctx.label}: ${ctx.parsed.toLocaleString('th-TH')} ล้าน (${(ctx.parsed/3057390*100).toFixed(1)}%)`}}}}
+});
+
+// ===== TAB 1: COMPARE 2567 vs 2568 =====
+new Chart(document.getElementById('ch_cmp6768'),{
+  type:'bar',
+  data:{
+    labels:['ย.1','ย.2','ย.3','ย.4','ย.5','ย.6'],
+    datasets:[
+      {label:'2567',data:[386150,392029,561167,836383,131020,608211],
+        backgroundColor:'rgba(148,163,184,.55)',borderRadius:3},
+      {label:'2568',data:[403868,362200,582704,926267,136851,645500],
+        backgroundColor:Object.values(ALPHA),borderRadius:4}
+    ]
+  },
+  options:{...baseCfg,plugins:{...baseCfg.plugins,legend:{display:true,labels:{font:{family:'Kanit',size:11},color:TC,boxWidth:12}}},
+    scales:{x:{ticks:{color:TC,font:{family:'Kanit',size:11}}},
+            y:{ticks:{color:TC,font:{family:'Kanit',size:10},callback:v=>(v/1000).toFixed(0)+'k'},grid:{color:GC}}}}
+});
+
+// ===== TAB 2: TREND LINES =====
+new Chart(document.getElementById('ch_trend_line'),{
+  type:'line',
+  data:{
+    labels:YEARS,
+    datasets:[
+      {label:'ย.1 ความมั่นคง',data:Y1,borderColor:COLORS.y1,backgroundColor:'transparent',tension:.35,borderWidth:2,pointRadius:4},
+      {label:'ย.2 แข่งขัน',data:Y2,borderColor:COLORS.y2,backgroundColor:'transparent',tension:.35,borderWidth:2,pointRadius:4},
+      {label:'ย.3 ทรัพยากรมนุษย์',data:Y3,borderColor:COLORS.y3,backgroundColor:'transparent',tension:.35,borderWidth:2.5,pointRadius:4},
+      {label:'ย.4 โอกาส',data:Y4,borderColor:COLORS.y4,backgroundColor:'transparent',tension:.35,borderWidth:2.5,pointRadius:4},
+      {label:'ย.5 สิ่งแวดล้อม',data:Y5,borderColor:COLORS.y5,backgroundColor:'transparent',tension:.35,borderWidth:2,pointRadius:4,borderDash:[4,3]},
+      {label:'ย.6 ภาครัฐ',data:Y6,borderColor:COLORS.y6,backgroundColor:'transparent',tension:.35,borderWidth:2,pointRadius:4},
+    ]
+  },
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:true,position:'bottom',labels:{font:{family:'Kanit',size:10},color:TC,boxWidth:10,padding:8}}},
+    scales:{x:{ticks:{color:TC,font:{family:'Kanit',size:11}}},
+            y:{ticks:{color:TC,font:{family:'Kanit',size:10},callback:v=>(v/1000).toFixed(0)+'k'},grid:{color:GC}}}}
+});
+
+// ===== TAB 2: STACKED % =====
+const pct=(arr)=>arr.map((v,i)=>+(v/TOT[i]*100).toFixed(2));
+new Chart(document.getElementById('ch_stack'),{
+  type:'bar',
+  data:{
+    labels:YEARS,
+    datasets:[
+      {label:'ย.1',data:pct(Y1),backgroundColor:ALPHA.y1},
+      {label:'ย.2',data:pct(Y2),backgroundColor:ALPHA.y2},
+      {label:'ย.3',data:pct(Y3),backgroundColor:ALPHA.y3},
+      {label:'ย.4',data:pct(Y4),backgroundColor:ALPHA.y4},
+      {label:'ย.5',data:pct(Y5),backgroundColor:ALPHA.y5},
+      {label:'ย.6',data:pct(Y6),backgroundColor:ALPHA.y6},
+    ]
+  },
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:true,position:'bottom',labels:{font:{family:'Kanit',size:10},color:TC,boxWidth:10,padding:8}}},
+    scales:{x:{stacked:true,ticks:{color:TC,font:{family:'Kanit',size:11}}},
+            y:{stacked:true,min:0,max:100,ticks:{color:TC,font:{family:'Kanit',size:10},callback:v=>v+'%'},grid:{color:GC}}}}
+});
+
+// ===== TAB 2: YoY 2568 vs 2567 =====
+const yoy=[Y1,Y2,Y3,Y4,Y5,Y6].map(a=>+((a[6]-a[5])/a[5]*100).toFixed(1));
+new Chart(document.getElementById('ch_yoy'),{
+  type:'bar',
+  data:{
+    labels:['ย.1','ย.2','ย.3','ย.4','ย.5','ย.6'],
+    datasets:[{data:yoy,
+      backgroundColor:yoy.map(v=>v>=0?'rgba(22,163,74,.7)':'rgba(220,38,38,.7)'),
+      borderRadius:5,borderWidth:0}]
+  },
+  options:{...baseCfg,
+    plugins:{...baseCfg.plugins,
+      tooltip:{callbacks:{label:ctx=>` ${ctx.parsed.y>0?'+':''}${ctx.parsed.y}%`}}},
+    scales:{x:{ticks:{color:TC,font:{family:'Kanit',size:12}}},
+            y:{ticks:{color:TC,font:{family:'Kanit',size:10},callback:v=>v+'%'},grid:{color:GC}}}}
+});
+
+// ===== INDIVIDUAL STRATEGY CHARTS (helper) =====
+function makeStratCharts(id, data, color, colorAlpha) {
+  const pctArr = data.map((v,i)=>+(v/TOT[i]*100).toFixed(2));
+  new Chart(document.getElementById('ch_'+id+'_trend'),{
+    type:'bar',
+    data:{
+      labels:YEARS,
+      datasets:[{data:data,backgroundColor:YEARS.map((_,i)=>i===6?color:colorAlpha),borderRadius:5}]
+    },
+    options:{...baseCfg,
+      scales:{x:{ticks:{color:TC,font:{family:'Kanit',size:11}}},
+              y:{ticks:{color:TC,font:{family:'Kanit',size:10},callback:v=>(v/1000).toFixed(0)+'k'},grid:{color:GC}}}}
+  });
+  new Chart(document.getElementById('ch_'+id+'_pct'),{
+    type:'line',
+    data:{
+      labels:YEARS,
+      datasets:[{data:pctArr,borderColor:color,backgroundColor:colorAlpha.replace('0.7','0.12'),
+        fill:true,tension:.35,borderWidth:2.5,pointRadius:5,pointBackgroundColor:color}]
+    },
+    options:{...baseCfg,
+      scales:{x:{ticks:{color:TC,font:{family:'Kanit',size:11}}},
+              y:{ticks:{color:TC,font:{family:'Kanit',size:10},callback:v=>v+'%'},grid:{color:GC},
+                 title:{display:true,text:'% ของงบรวมประเทศ',color:TC,font:{family:'Kanit',size:10}}}}}
+  });
+}
+
+makeStratCharts('y1',Y1,COLORS.y1,ALPHA.y1);
+makeStratCharts('y2',Y2,COLORS.y2,ALPHA.y2);
+makeStratCharts('y3',Y3,COLORS.y3,ALPHA.y3);
+makeStratCharts('y4',Y4,COLORS.y4,ALPHA.y4);
+makeStratCharts('y5',Y5,COLORS.y5,ALPHA.y5);
+makeStratCharts('y6',Y6,COLORS.y6,ALPHA.y6);
+
+</script>
+</body>
+</html>

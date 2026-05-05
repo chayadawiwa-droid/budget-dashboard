@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HR Dashboard — ยุทธศาสตร์ที่ 3 + Cross-Strategy | งบ 2569</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#f4f6fb; --bg2:#ffffff; --bg3:#eef1f7; --border:#d0d7e8;
+    --text:#1a1d2e; --text2:#5a6282; --accent:#2563eb;
+    --y2:#0891b2; --y3:#16a34a; --y4:#d97706; --y6:#7c3aed;
+  }
+  body{font-family:'Kanit',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+
+  /* ===== HEADER ===== */
+  .header{background:linear-gradient(135deg,#1e3a8a 0%,#2563eb 60%,#3b82f6 100%);color:#fff;padding:20px 28px 18px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(37,99,235,.25)}
+  .header h1{font-size:18px;font-weight:700;letter-spacing:.3px}
+  .header p{font-size:12px;opacity:.8;margin-top:3px}
+  .badge-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35)}
+
+  /* ===== TABS ===== */
+  .tabs{display:flex;background:var(--bg2);border-bottom:2px solid var(--border);overflow-x:auto;position:sticky;top:72px;z-index:99;gap:0}
+  .tab{padding:10px 18px;cursor:pointer;font-size:12.5px;font-weight:500;color:var(--text2);border-bottom:3px solid transparent;white-space:nowrap;transition:all .2s;font-family:'Kanit',sans-serif}
+  .tab:hover{color:var(--text);background:var(--bg3)}
+  .tab.active{color:var(--accent);border-bottom-color:var(--accent);background:var(--bg)}
+  .tab-content{display:none;padding:20px}
+  .tab-content.active{display:block}
+
+  /* ===== LAYOUT ===== */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px}
+  .card-sm{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px}
+  .section-title{font-size:14px;font-weight:600;color:var(--text);margin:20px 0 12px;display:flex;align-items:center;gap:8px}
+  .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+  .divider{border:none;border-top:1px solid var(--border);margin:18px 0}
+
+  /* ===== KPI BOX ===== */
+  .kpi-box{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;text-align:center}
+  .kpi-label{font-size:11px;color:var(--text2);margin-bottom:5px;font-weight:400}
+  .kpi-value{font-size:22px;font-weight:700;color:var(--accent);line-height:1.15}
+  .kpi-sub{font-size:10px;color:var(--text2);margin-top:3px}
+
+  /* ===== CROSS-STRATEGY CARD ===== */
+  .cs-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;border-left:4px solid var(--accent)}
+  .cs-header{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+  .cs-sub{font-size:11px;color:var(--text2);margin-bottom:10px}
+  .cs-total{font-size:20px;font-weight:700}
+  .cs-tag{display:inline-block;padding:2px 8px;border-radius:12px;font-size:10.5px;font-weight:500;margin-bottom:8px}
+
+  /* ===== CHART CONTAINERS ===== */
+  .chart-wrap{position:relative;margin-top:8px}
+  .chart-h200{height:200px}
+  .chart-h220{height:220px}
+  .chart-h260{height:260px}
+  .chart-h300{height:300px}
+  .chart-title{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;text-align:center}
+
+  /* ===== TABLE ===== */
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th{background:var(--bg3);padding:7px 10px;text-align:left;font-weight:600;color:var(--text);border-bottom:2px solid var(--border)}
+  td{padding:6px 10px;border-bottom:1px solid var(--border);color:var(--text)}
+  tr:hover td{background:var(--bg3)}
+  .num{text-align:right;font-weight:500}
+  .bold{font-weight:600}
+  .indent1{padding-left:22px}
+  .indent2{padding-left:38px}
+  .highlight{background:rgba(37,99,235,.06)!important}
+
+  /* ===== PROGRESS BAR ===== */
+  .prog-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .prog-label{width:140px;font-size:11.5px;color:var(--text2);flex-shrink:0;text-align:right}
+  .prog-label-l{width:180px;font-size:11.5px;color:var(--text2);flex-shrink:0}
+  .prog-bar-bg{flex:1;background:var(--bg3);border-radius:4px;height:12px;overflow:hidden}
+  .prog-bar{height:100%;border-radius:4px;transition:width .6s ease}
+  .prog-val{font-size:11px;font-weight:600;color:var(--text);min-width:80px;text-align:right}
+
+  /* ===== AGENCY TAG ===== */
+  .agency-row{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:6px;margin-bottom:5px;background:var(--bg3)}
+  .agency-name{font-size:12px;font-weight:500;color:var(--text)}
+  .agency-project{font-size:10.5px;color:var(--text2)}
+  .agency-budget{font-size:13px;font-weight:700}
+
+  /* ===== SUMMARY COMPARE ===== */
+  .compare-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;margin:4px}
+
+  /* ===== RESPONSIVE ===== */
+  @media(max-width:800px){
+    .grid2,.grid3,.grid4{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📊 งบประมาณ 2569 — ยุทธศาสตร์ที่ 3 พัฒนาทรัพยากรมนุษย์ + Cross-Strategy HR</h1>
+  <p>จัดสรรจาก พ.ร.บ. งบประมาณรายจ่ายประจำปีงบประมาณ พ.ศ. 2569 | ข้อมูล ณ กันยายน 2568</p>
+  <div class="badge-row">
+    <span class="badge">🟢 ย.3 รวม 604,806 ล้านบาท</span>
+    <span class="badge">🔵 ย.2 HR-linked 41,472 ล้านบาท</span>
+    <span class="badge">🟡 ย.4 HR-linked 14,145 ล้านบาท</span>
+    <span class="badge">🟣 ย.6 HR-linked 5,212 ล้านบาท</span>
+    <span class="badge">งบรวมประเทศ 3,780,600 ล้านบาท</span>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('overview',this)">ภาพรวม ย.3</div>
+  <div class="tab" onclick="showTab('y3detail',this)">ย.3 รายละเอียด</div>
+  <div class="tab" onclick="showTab('y2hr',this)">ย.2 × HR</div>
+  <div class="tab" onclick="showTab('y4hr',this)">ย.4 × HR</div>
+  <div class="tab" onclick="showTab('y6hr',this)">ย.6 × HR</div>
+  <div class="tab" onclick="showTab('crosssum',this)">Cross-Strategy รวม</div>
+  <div class="tab" onclick="showTab('trend',this)">📈 แนวโน้ม 8 ปี</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB 1: OVERVIEW                                              -->
+<!-- ============================================================ -->
+<div id="overview" class="tab-content active">
+
+  <div class="grid4" style="margin-bottom:16px">
+    <div class="kpi-box">
+      <div class="kpi-label">งบรวม ยุทธศาสตร์ที่ 3</div>
+      <div class="kpi-value" style="color:#16a34a">604,806</div>
+      <div class="kpi-sub">ล้านบาท</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-label">สัดส่วนจากงบรวมประเทศ</div>
+      <div class="kpi-value" style="color:#2563eb">16.0%</div>
+      <div class="kpi-sub">จากทั้งหมด 3,780,600 ล้านบาท</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-label">งบ HR ข้ามยุทธศาสตร์ (ย.2+4+6)</div>
+      <div class="kpi-value" style="color:#7c3aed">60,829</div>
+      <div class="kpi-sub">ล้านบาท (ย.2+ย.4+ย.6)</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-label">งบ HR รวมทุกยุทธศาสตร์</div>
+      <div class="kpi-value" style="color:#d97706">665,635</div>
+      <div class="kpi-sub">ล้านบาท (~17.6% ของงบชาติ)</div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <!-- Doughnut: ย.3 แผนแม่บท -->
+    <div class="card">
+      <div class="chart-title">สัดส่วน ย.3 แยกตามแผนแม่บท</div>
+      <div class="chart-wrap chart-h260"><canvas id="ch_y3plans"></canvas></div>
+    </div>
+    <!-- Doughnut: HR ทั้ง 4 ยุทธศาสตร์ -->
+    <div class="card">
+      <div class="chart-title">งบ HR รวมทุกยุทธศาสตร์ — สัดส่วน</div>
+      <div class="chart-wrap chart-h260"><canvas id="ch_allhr"></canvas></div>
+    </div>
+  </div>
+
+  <div class="section-title"><div class="dot" style="background:#16a34a"></div>ย.3 — แผนแม่บทหลัก 5 ประเด็น</div>
+  <div class="grid3" style="margin-bottom:16px">
+    <div class="cs-card" style="border-left-color:#16a34a">
+      <span class="cs-tag" style="background:#dcfce7;color:#16a34a">3.2</span>
+      <div class="cs-header">พัฒนาศักยภาพคนตลอดช่วงชีวิต</div>
+      <div class="cs-sub">ครอบคลุมทุกวัย — ปฐมวัยถึงวัยแรงงาน</div>
+      <div class="cs-total" style="color:#16a34a">524,774 <span style="font-size:13px;font-weight:400">ล้านบาท</span></div>
+      <div style="font-size:10.5px;color:var(--text2);margin-top:4px">86.8% ของ ย.3</div>
+    </div>
+    <div class="cs-card" style="border-left-color:#2563eb">
+      <span class="cs-tag" style="background:#dbeafe;color:#2563eb">3.3</span>
+      <div class="cs-header">พัฒนาการเรียนรู้</div>
+      <div class="cs-sub">ทักษะ ศตวรรษ 21 / พหุปัญญา / เรียนรู้ตลอดชีวิต</div>
+      <div class="cs-total" style="color:#2563eb">40,413 <span style="font-size:13px;font-weight:400">ล้านบาท</span></div>
+      <div style="font-size:10.5px;color:var(--text2);margin-top:4px">6.7% ของ ย.3</div>
+    </div>
+    <div class="cs-card" style="border-left-color:#7c3aed">
+      <span class="cs-tag" style="background:#ede9fe;color:#7c3aed">3.4</span>
+      <div class="cs-header">เสริมสร้างสุขภาวะที่ดี</div>
+      <div class="cs-sub">สุขภาพกาย / สุขภาพจิต / อนามัยสิ่งแวดล้อม</div>
+      <div class="cs-total" style="color:#7c3aed">29,721 <span style="font-size:13px;font-weight:400">ล้านบาท</span></div>
+      <div style="font-size:10.5px;color:var(--text2);margin-top:4px">4.9% ของ ย.3</div>
+    </div>
+    <div class="cs-card" style="border-left-color:#ea580c">
+      <span class="cs-tag" style="background:#ffedd5;color:#ea580c">3.5</span>
+      <div class="cs-header">ศักยภาพการกีฬา</div>
+      <div class="cs-sub">กีฬามวลชน / กีฬาเพื่อความเป็นเลิศ</div>
+      <div class="cs-total" style="color:#ea580c">6,501 <span style="font-size:13px;font-weight:400">ล้านบาท</span></div>
+      <div style="font-size:10.5px;color:var(--text2);margin-top:4px">1.1% ของ ย.3</div>
+    </div>
+    <div class="cs-card" style="border-left-color:#d97706">
+      <span class="cs-tag" style="background:#fef9c3;color:#d97706">3.1</span>
+      <div class="cs-header">ปรับเปลี่ยนค่านิยมและวัฒนธรรม</div>
+      <div class="cs-sub">คุณธรรม / จริยธรรม / ค่านิยมไทย</div>
+      <div class="cs-total" style="color:#d97706">3,397 <span style="font-size:13px;font-weight:400">ล้านบาท</span></div>
+      <div style="font-size:10.5px;color:var(--text2);margin-top:4px">0.6% ของ ย.3</div>
+    </div>
+    <div class="card-sm" style="background:var(--bg3)">
+      <div style="font-size:11px;font-weight:600;color:var(--text2);margin-bottom:8px">กระทรวงหลัก ย.3 (Top 5)</div>
+      <div class="prog-row"><div class="prog-label-l">ศึกษาธิการ (ศธ.)</div><div class="prog-bar-bg"><div class="prog-bar" style="width:100%;background:#16a34a"></div></div><div class="prog-val">~350,000</div></div>
+      <div class="prog-row"><div class="prog-label-l">สาธารณสุข (สธ.)</div><div class="prog-bar-bg"><div class="prog-bar" style="width:8.3%;background:#2563eb"></div></div><div class="prog-val">29,000</div></div>
+      <div class="prog-row"><div class="prog-label-l">ท่องเที่ยวและกีฬา</div><div class="prog-bar-bg"><div class="prog-bar" style="width:1.9%;background:#ea580c"></div></div><div class="prog-val">6,501</div></div>
+      <div class="prog-row"><div class="prog-label-l">อว.</div><div class="prog-bar-bg"><div class="prog-bar" style="width:1.6%;background:#7c3aed"></div></div><div class="prog-val">5,630</div></div>
+      <div class="prog-row"><div class="prog-label-l">แรงงาน</div><div class="prog-bar-bg"><div class="prog-bar" style="width:0.6%;background:#0891b2"></div></div><div class="prog-val">2,205</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB 2: ย.3 DETAIL                                           -->
+<!-- ============================================================ -->
+<div id="y3detail" class="tab-content">
+
+  <div class="section-title"><div class="dot" style="background:#16a34a"></div>3.2 พัฒนาศักยภาพคนตลอดช่วงชีวิต — แยกตามช่วงวัย</div>
+  <div class="grid2">
+    <div class="card">
+      <div class="chart-title">งบประมาณตามช่วงวัย (3.2)</div>
+      <div class="chart-wrap chart-h220"><canvas id="ch_y3age"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="chart-title">สัดส่วนช่วงวัย (3.2)</div>
+      <div class="chart-wrap chart-h220"><canvas id="ch_y3age_d"></canvas></div>
+    </div>
+  </div>
+
+  <div class="section-title" style="margin-top:18px"><div class="dot" style="background:#2563eb"></div>กระทรวงแรงงาน — หน่วยงานและงบประมาณ ย.3</div>
+  <div class="grid2">
+    <div class="card">
+      <div class="chart-title">งบ กระทรวงแรงงาน แยกหน่วยงาน (ล้านบาท)</div>
+      <div class="chart-wrap chart-h200"><canvas id="ch_labour"></canvas></div>
+    </div>
+    <div class="card" style="overflow-x:auto">
+      <table>
+        <thead><tr><th>หน่วยงาน</th><th>แผนย่อย</th><th class="num">งบ (ล้านบาท)</th><th>ลักษณะงาน</th></tr></thead>
+        <tbody>
+          <tr><td class="bold">กระทรวงแรงงาน (รวม)</td><td></td><td class="num bold">2,204.77</td><td></td></tr>
+          <tr><td class="indent1">สำนักงานปลัดฯ (สป.รง.)</td><td>3.2.4</td><td class="num">644.29</td><td>บริหาร/นโยบายแรงงาน</td></tr>
+          <tr><td class="indent1">กรมพัฒนาฝีมือแรงงาน</td><td>3.2.4</td><td class="num">1,214.10</td><td>ฝึกอบรมฝีมือ/ยกระดับทักษะ</td></tr>
+          <tr><td class="indent1">กรมการจัดหางาน</td><td>3.2.4</td><td class="num">329.99</td><td>จัดหางาน/แนะแนวอาชีพ</td></tr>
+          <tr><td class="indent1">กรมสวัสดิการและคุ้มครองแรงงาน</td><td>3.2.4</td><td class="num">16.37</td><td>คุ้มครองสิทธิแรงงาน</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section-title" style="margin-top:18px"><div class="dot" style="background:#7c3aed"></div>กระทรวง อว. — โครงการพัฒนากำลังคน ย.3</div>
+  <div class="card" style="overflow-x:auto">
+    <table>
+      <thead><tr><th>หน่วยงาน / โครงการ</th><th>แผนย่อย</th><th class="num">งบ (ล้านบาท)</th><th>วัตถุประสงค์</th></tr></thead>
+      <tbody>
+        <tr><td class="bold">กระทรวง อว. (รวม ย.3)</td><td></td><td class="num bold">~5,630</td><td></td></tr>
+        <tr><td class="indent1">สป.อว. — โครงการบัณฑิตพันธุ์ใหม่</td><td>3.2.4</td><td class="num">557.23</td><td>ผลิตกำลังคนทักษะสูงตรงตลาดแรงงาน</td></tr>
+        <tr><td class="indent1">สป.อว. — Skill Portfolio</td><td>3.2.4</td><td class="num">773.39</td><td>พัฒนาทักษะใหม่รูปแบบ Micro-credential</td></tr>
+        <tr><td class="indent1">สป.อว. — National Credit Bank</td><td>3.2.4</td><td class="num">100.00</td><td>ระบบสะสมหน่วยกิตแห่งชาติ</td></tr>
+        <tr><td class="indent1">สป.อว. — ผลิตและพัฒนากำลังคนอุดมศึกษา</td><td>3.2.4</td><td class="num">~600</td><td>ยกระดับคุณภาพอุดมศึกษา</td></tr>
+        <tr><td class="indent1">สถาบันบัณฑิตพัฒนบริหารศาสตร์ (NIDA)</td><td>3.2.3</td><td class="num">204.00</td><td>บริหารจัดการระดับสูง</td></tr>
+        <tr><td class="indent1">สถาบันวิทยาลัยชุมชน</td><td>3.3.1</td><td class="num">11.30</td><td>อุดมศึกษาพื้นที่ห่างไกล</td></tr>
+        <tr><td class="indent1">สอศ. (อาชีวศึกษา)</td><td>3.2.3</td><td class="num">~4,575</td><td>อาชีวศึกษา ทักษะวิชาชีพ</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title" style="margin-top:18px"><div class="dot" style="background:#0891b2"></div>กรมพัฒนาฝีมือแรงงาน — แยกประเภทโครงการ</div>
+  <div class="card">
+    <div class="chart-wrap chart-h200"><canvas id="ch_dsd"></canvas></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB 3: ย.2 × HR                                            -->
+<!-- ============================================================ -->
+<div id="y2hr" class="tab-content">
+
+  <div style="background:#dbeafe;border:1px solid #93c5fd;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12.5px;color:#1e40af">
+    <strong>บริบท ย.2:</strong> ยุทธศาสตร์ด้านการสร้างความสามารถในการแข่งขัน — ส่วน HR-linked คือแผนย่อย 2.8 (วิจัยและนวัตกรรม) ที่พัฒนานักวิจัย/บุคลากรวิทย์ และ 2.9 (ภารกิจยุทธศาสตร์) ที่ Upskill แรงงานรองรับอุตสาหกรรมเป้าหมาย
+  </div>
+
+  <div class="grid2" style="margin-bottom:16px">
+    <div class="cs-card" style="border-left-color:#0891b2">
+      <span class="cs-tag" style="background:#cffafe;color:#0891b2">2.8 วิจัยและนวัตกรรม</span>
+      <div class="cs-header">พัฒนานักวิจัยและบุคลากรวิทยาศาสตร์</div>
+      <div class="cs-sub">กองทุนวิจัย / ศูนย์ความเป็นเลิศ / โครงสร้างพื้นฐานวิจัย</div>
+      <div class="cs-total" style="color:#0891b2">19,728 <span style="font-size:13px;font-weight:400">ล้านบาท</span></div>
+    </div>
+    <div class="cs-card" style="border-left-color:#2563eb">
+      <span class="cs-tag" style="background:#dbeafe;color:#2563eb">2.9 ภารกิจยุทธศาสตร์</span>
+      <div class="cs-header">Upskill แรงงาน / บุคลากร EEC</div>
+      <div class="cs-sub">บัณฑิตพันธุ์ใหม่ / Skill Portfolio / Credit Bank / EEC Workforce</div>
+      <div class="cs-total" style="color:#2563eb">21,744 <span style="font-size:13px;font-weight:400">ล้านบาท</span></div>
+    </div>
+  </div>
+
+  <div class="section-title"><div class="dot" style="background:#0891b2"></div>2.8 หน่วยงานวิจัยและนวัตกรรม — งบที่เกี่ยวข้องกับการพัฒนากำลังคน</div>
+  <div class="grid2">
+    <div class="card">
+      <div class="chart-title">หน่วยงาน ย.2.8 (ล้านบาท)</div>
+      <div class="chart-wrap chart-h220"><canvas id="ch_y2rd"></canvas></div>
+    </div>
+    <div class="card" style="overflow-x:auto">
+      <table>
+        <thead><tr><th>หน่วยงาน</th><th>โครงการหลัก</th><th class="num">งบ (ล้านบาท)</th></tr></thead>
+        <tbody>
+          <tr><td class="bold">รวม 2.8</td><td></td><td class="num bold">19,728.29</td></tr>
+          <tr><td class="indent1">สกสว. + วช. + บพค.</td><td>กองทุนวิจัยแห่งชาติ</td><td class="num">~17,141</td></tr>
+          <tr><td class="indent1">สวทช.</td><td>เพิ่มขีดความสามารถเทคโนโลยีฯ</td><td class="num">2,019.34</td></tr>
+          <tr><td class="indent1">สป.อว.</td><td>นวัตกรรมอาหาร / อุตสาหกรรมเป้าหมาย</td><td class="num">459.45</td></tr>
+          <tr><td class="indent1">สนช.</td><td>ส่งเสริมนวัตกรรมแห่งชาติ</td><td class="num">107.50</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <hr class="divider">
+  <div class="section-title"><div class="dot" style="background:#2563eb"></div>2.9 Upskill แรงงาน — โครงการพัฒนากำลังคนรองรับอุตสาหกรรมเป้าหมาย</div>
+  <div class="grid2">
+    <div class="card">
+      <div class="chart-title">โครงการ Upskill ย.2.9 (ล้านบาท)</div>
+      <div class="chart-wrap chart-h200"><canvas id="ch_y2upskill"></canvas></div>
+    </div>
+    <div class="card" style="overflow-x:auto">
+      <table>
+        <thead><tr><th>โครงการ / หน่วยงาน</th><th class="num">งบ (ล้านบาท)</th><th>เป้าหมาย</th></tr></thead>
+        <tbody>
+          <tr><td class="bold">รวม 2.9 (ยุทธศาสตร์)</td><td class="num bold">21,744</td><td></td></tr>
+          <tr><td class="indent1 bold">โครงการ Upskill รองรับ EEC/อุตสาหกรรม</td><td class="num">~20,313</td><td>แรงงานใหม่/ปรับทักษะ</td></tr>
+          <tr><td class="indent2">บัณฑิตพันธุ์ใหม่ (สป.อว.)</td><td class="num">557.23</td><td>บัณฑิตพร้อมทำงานทันที</td></tr>
+          <tr><td class="indent2">Skill Portfolio (สป.อว.)</td><td class="num">773.39</td><td>Micro-credential ทักษะใหม่</td></tr>
+          <tr><td class="indent2">National Credit Bank (สป.อว.)</td><td class="num">100.00</td><td>สะสมหน่วยกิตตลอดชีวิต</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:10px;padding:8px;background:var(--bg3);border-radius:6px;font-size:11px;color:var(--text2)">
+        <strong>หมายเหตุ:</strong> ย.2.9 รวมภารกิจยุทธศาสตร์ทั้งหมดเพื่อสนับสนุนความสามารถแข่งขัน ส่วน HR-linked โดยตรงคือ 3 โครงการ = 1,430.62 ล้านบาท ส่วนที่เหลือเป็นโครงสร้างพื้นฐานและสิ่งแวดล้อมสำหรับแรงงาน EEC
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB 4: ย.4 × HR                                            -->
+<!-- ============================================================ -->
+<div id="y4hr" class="tab-content">
+
+  <div style="background:#fef9c3;border:1px solid #fde047;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12.5px;color:#854d0e">
+    <strong>บริบท ย.4:</strong> ยุทธศาสตร์ด้านการสร้างโอกาสและความเสมอภาคทางสังคม — ส่วน HR-linked คือ 4.1.2 สังคมสูงวัย (ส่งเสริมงาน/รายได้ผู้สูงอายุ) และ 4.3.2 มาตรการเจาะจงกลุ่มเปราะบาง (คุ้มครองสวัสดิการ ฝึกอาชีพ และที่อยู่อาศัย)
+  </div>
+
+  <div class="grid2" style="margin-bottom:16px">
+    <div class="cs-card" style="border-left-color:#d97706">
+      <span class="cs-tag" style="background:#fef9c3;color:#d97706">4.1.2 สังคมสูงวัย</span>
+      <div class="cs-header">ส่งเสริมการมีงานทำและรายได้ผู้สูงอายุ</div>
+      <div class="cs-sub">เตรียมความพร้อมรองรับสังคมสูงวัย — อาชีพ / สุขภาพ / เครือข่าย</div>
+      <div class="cs-total" style="color:#d97706">784.67 <span style="font-size:13px;font-weight:400">ล้านบาท</span></div>
+    </div>
+    <div class="cs-card" style="border-left-color:#dc2626">
+      <span class="cs-tag" style="background:#fee2e2;color:#dc2626">4.3.2 กลุ่มเปราะบาง</span>
+      <div class="cs-header">มาตรการเจาะจงกลุ่มเป้าหมายเฉพาะ</div>
+      <div class="cs-sub">เด็ก / ผู้สูงอายุ / สตรี / คนพิการ / ผู้ด้อยโอกาส</div>
+      <div class="cs-total" style="color:#dc2626">13,361 <span style="font-size:13px;font-weight:400">ล้านบาท</span></div>
+    </div>
+  </div>
+
+  <div class="section-title"><div class="dot" style="background:#d97706"></div>4.1.2 ส่งเสริมงาน/รายได้ผู้สูงอายุ — หน่วยงานหลัก</div>
+  <div class="grid2">
+    <div class="card">
+      <div class="chart-title">หน่วยงาน 4.1.2 สังคมสูงวัย (ล้านบาท)</div>
+      <div class="chart-wrap chart-h200"><canvas id="ch_y4aging"></canvas></div>
+    </div>
+    <div class="card" style="overflow-x:auto">
+      <table>
+        <thead><tr><th>หน่วยงาน / โครงการ</th><th class="num">งบ (ล้านบาท)</th><th>ลักษณะ</th></tr></thead>
+        <tbody>
+          <tr><td class="bold">รวม 4.1.2</td><td class="num bold">784.67</td><td></td></tr>
+          <tr><td class="indent1">กรมกิจการผู้สูงอายุ (พม.)</td><td class="num">127.75</td><td>พัฒนาเครือข่าย / ส่งเสริมรายได้</td></tr>
+          <tr><td class="indent1">สถาบันวิทยาลัยชุมชน (อว.)</td><td class="num">727.75</td><td>ส่งเสริมงาน / มีส่วนร่วมสังคมสูงวัย</td></tr>
+          <tr><td class="indent2">— โครงการส่งเสริมการมีงานทำฯ</td><td class="num">2.05</td><td>จ้างงานผู้สูงอายุ</td></tr>
+          <tr><td class="indent2">— โครงการมีส่วนร่วมรับรองสังคมสูงวัย</td><td class="num">725.70</td><td>การเตรียมความพร้อม</td></tr>
+          <tr><td class="indent1">สำนักงานสาธารณสุข (สธ.)</td><td class="num">37.73</td><td>ระบบดูแลสุขภาพผู้สูงอายุ</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <hr class="divider">
+  <div class="section-title"><div class="dot" style="background:#dc2626"></div>4.3.2 กลุ่มเปราะบาง — หน่วยงานหลัก</div>
+  <div class="grid2">
+    <div class="card">
+      <div class="chart-title">หน่วยงาน พม. ใน 4.3.2 (ล้านบาท)</div>
+      <div class="chart-wrap chart-h220"><canvas id="ch_y4vul"></canvas></div>
+    </div>
+    <div class="card" style="overflow-x:auto">
+      <table>
+        <thead><tr><th>หน่วยงาน</th><th>โครงการหลัก</th><th class="num">งบ (ล้านบาท)</th></tr></thead>
+        <tbody>
+          <tr><td class="bold">รวม 4.3.2</td><td></td><td class="num bold">13,360.67</td></tr>
+          <tr><td class="indent1">สป.พม.</td><td>พัฒนาระบบคุ้มครอง/สวัสดิการ</td><td class="num">465.79</td></tr>
+          <tr><td class="indent1">กรมกิจการเด็กและเยาวชน</td><td>คุ้มครอง/สวัสดิการเด็ก</td><td class="num">759.75</td></tr>
+          <tr><td class="indent1">กรมกิจการผู้สูงอายุ</td><td>สวัสดิการผู้สูงอายุ</td><td class="num">723.47</td></tr>
+          <tr><td class="indent1">กรมกิจการสตรีฯ</td><td>สงเคราะห์กลุ่มเปราะบาง</td><td class="num">24.52</td></tr>
+          <tr><td class="indent1">กรมพัฒนาสังคม</td><td>พัฒนาระบบสวัสดิการ</td><td class="num">47.24</td></tr>
+          <tr><td class="indent1">กรมส่งเสริมคนพิการ</td><td>สวัสดิการ/คุ้มครองคนพิการ</td><td class="num">39.37</td></tr>
+          <tr><td class="indent1">สถาบัน CODI / เคหะแห่งชาติ</td><td>ที่อยู่อาศัย/ความมั่นคง</td><td class="num">~1,300</td></tr>
+          <tr><td class="indent1">รถไฟ + ขนส่งมวลชน (PSO)</td><td>บริการสาธารณะกลุ่มเปราะบาง</td><td class="num">~10,000</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB 5: ย.6 × HR                                            -->
+<!-- ============================================================ -->
+<div id="y6hr" class="tab-content">
+
+  <div style="background:#ede9fe;border:1px solid #c4b5fd;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12.5px;color:#4c1d95">
+    <strong>บริบท ย.6:</strong> ยุทธศาสตร์ด้านการปรับสมดุลและพัฒนาระบบการบริหารจัดการภาครัฐ — แผนย่อย 6.1.5 "การสร้างและพัฒนาบุคลากรภาครัฐ" เป็น HR-linked โดยตรง: ยกระดับสมรรถนะ Digital skills คุณธรรมจริยธรรม และประสิทธิภาพข้าราชการทั่วประเทศ
+  </div>
+
+  <div class="grid2" style="margin-bottom:16px">
+    <div class="cs-card" style="border-left-color:#7c3aed">
+      <span class="cs-tag" style="background:#ede9fe;color:#7c3aed">6.1.5 บุคลากรภาครัฐ</span>
+      <div class="cs-header">สร้างและพัฒนาบุคลากรภาครัฐ</div>
+      <div class="cs-sub">ยกระดับทักษะ Digital / สมรรถนะ / คุณธรรมจริยธรรม ข้าราชการทั่วทุกกระทรวง</div>
+      <div class="cs-total" style="color:#7c3aed">5,212 <span style="font-size:13px;font-weight:400">ล้านบาท</span></div>
+    </div>
+    <div class="card-sm" style="background:var(--bg3)">
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:8px">โครงการหลักใน 6.1.5</div>
+      <div class="agency-row">
+        <div><div class="agency-name">ยกระดับทักษะ Digital สำหรับข้าราชการ</div><div class="agency-project">ขับเคลื่อนรัฐบาลดิจิทัล (ทุกกระทรวง)</div></div>
+        <div class="agency-budget" style="color:#7c3aed">~4,000</div>
+      </div>
+      <div class="agency-row">
+        <div><div class="agency-name">ก.พ. — ยกระดับคุณภาพกำลังคนภาครัฐ</div><div class="agency-project">แผนงานยุทธศาสตร์พัฒนาบริการประชาชน</div></div>
+        <div class="agency-budget" style="color:#7c3aed">950.00</div>
+      </div>
+      <div class="agency-row">
+        <div><div class="agency-name">สถาบันพระปกเกล้า</div><div class="agency-project">ฝึกอบรม Digital Skills / Reskill ข้าราชการ</div></div>
+        <div class="agency-budget" style="color:#7c3aed">12.78</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title"><div class="dot" style="background:#7c3aed"></div>หน่วยงานที่ได้รับงบ 6.1.5 (ตัวอย่างกระทรวง)</div>
+  <div class="grid2">
+    <div class="card">
+      <div class="chart-title">งบ 6.1.5 แยกกระทรวง — ตัวอย่าง (ล้านบาท)</div>
+      <div class="chart-wrap chart-h260"><canvas id="ch_y6hr"></canvas></div>
+    </div>
+    <div class="card" style="overflow-x:auto">
+      <table>
+        <thead><tr><th>หน่วยงาน / กระทรวง</th><th>โครงการ</th><th class="num">งบ (ล้านบาท)</th></tr></thead>
+        <tbody>
+          <tr><td class="bold">รวม 6.1.5</td><td></td><td class="num bold">5,211.94</td></tr>
+          <tr class="highlight"><td class="indent1 bold">ก.พ. (สำนักนายกรัฐมนตรี)</td><td>ยกระดับคุณภาพกำลังคนภาครัฐ</td><td class="num bold">950.00</td></tr>
+          <tr><td class="indent1">สป.พม.</td><td>พัฒนาสมรรถนะบุคลากรสู่ความเป็นเลิศ</td><td class="num">25.29</td></tr>
+          <tr><td class="indent1">สป.พาณิชย์</td><td>พัฒนาบุคลากรรองรับการเปลี่ยนแปลง</td><td class="num">20.75</td></tr>
+          <tr><td class="indent1">ส.ป.ก. (เกษตร)</td><td>พัฒนาระบบจัดการข้อมูลที่ดิน</td><td class="num">9.03</td></tr>
+          <tr><td class="indent1">สถาบันพระปกเกล้า</td><td>ฝึกอบรม Digital / Reskill</td><td class="num">12.78</td></tr>
+          <tr><td class="indent1">กรมกิจการเด็กและเยาวชน</td><td>พัฒนาสมรรถนะบุคลากร</td><td class="num">5.77</td></tr>
+          <tr><td class="indent1">กรมกิจการสตรีฯ</td><td>พัฒนาสมรรถนะบุคลากร</td><td class="num">3.40</td></tr>
+          <tr><td class="indent1">กรมกิจการผู้สูงอายุ</td><td>พัฒนาสมรรถนะบุคลากร</td><td class="num">2.14</td></tr>
+          <tr><td class="indent1">กรมปศุสัตว์ (เกษตร)</td><td>พัฒนาศักยภาพ / ระบบ HR</td><td class="num">0.43</td></tr>
+          <tr><td class="indent1" style="color:var(--text2)">กว่า 100 หน่วยงานที่เหลือ</td><td>Digital Skills สำหรับข้าราชการ</td><td class="num">~4,182.35</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:8px;padding:8px;background:var(--bg3);border-radius:6px;font-size:11px;color:var(--text2)">
+        <strong>หมายเหตุ:</strong> แต่ละหน่วยงานได้รับงบย่อยผ่านโครงการ "พัฒนาทักษะ Digital สำหรับบุคลากรภาครัฐเพื่อการขับเคลื่อนรัฐบาลดิจิทัล" ซึ่งเป็นโครงการหลักที่ครอบคลุมทุกกระทรวง
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB 6: CROSS-STRATEGY SUMMARY                               -->
+<!-- ============================================================ -->
+<div id="crosssum" class="tab-content">
+
+  <div class="section-title"><div class="dot" style="background:#1a1d2e"></div>สรุปงบ HR ข้ามยุทธศาสตร์ — เปรียบเทียบ</div>
+
+  <div class="grid4" style="margin-bottom:16px">
+    <div class="kpi-box" style="border-top:3px solid #16a34a">
+      <div class="kpi-label">ย.3 (เน้นหลัก)</div>
+      <div class="kpi-value" style="color:#16a34a;font-size:20px">604,806</div>
+      <div class="kpi-sub">ล้านบาท | 16.0%</div>
+    </div>
+    <div class="kpi-box" style="border-top:3px solid #0891b2">
+      <div class="kpi-label">ย.2 HR-linked</div>
+      <div class="kpi-value" style="color:#0891b2;font-size:20px">41,472</div>
+      <div class="kpi-sub">ล้านบาท (2.8+2.9)</div>
+    </div>
+    <div class="kpi-box" style="border-top:3px solid #d97706">
+      <div class="kpi-label">ย.4 HR-linked</div>
+      <div class="kpi-value" style="color:#d97706;font-size:20px">14,145</div>
+      <div class="kpi-sub">ล้านบาท (4.1.2+4.3.2)</div>
+    </div>
+    <div class="kpi-box" style="border-top:3px solid #7c3aed">
+      <div class="kpi-label">ย.6 HR-linked</div>
+      <div class="kpi-value" style="color:#7c3aed;font-size:20px">5,212</div>
+      <div class="kpi-sub">ล้านบาท (6.1.5)</div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="chart-title">เปรียบเทียบงบ HR รวม 4 ยุทธศาสตร์ (ล้านบาท)</div>
+      <div class="chart-wrap chart-h260"><canvas id="ch_compare"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="chart-title">Cross-Strategy HR — สัดส่วนจากงบ HR รวม</div>
+      <div class="chart-wrap chart-h260"><canvas id="ch_compare_d"></canvas></div>
+    </div>
+  </div>
+
+  <div class="section-title" style="margin-top:20px"><div class="dot" style="background:#1a1d2e"></div>ตารางเปรียบเทียบ HR ข้ามยุทธศาสตร์</div>
+  <div class="card" style="overflow-x:auto">
+    <table>
+      <thead>
+        <tr>
+          <th>ยุทธศาสตร์</th>
+          <th>แผนย่อย HR-linked</th>
+          <th>หน่วยงานนำ</th>
+          <th>โครงการสำคัญ</th>
+          <th class="num">งบ (ล้านบาท)</th>
+          <th>ประเภท HR</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="highlight">
+          <td class="bold" style="color:#16a34a">ย.3 รวม</td>
+          <td>3.1–3.5</td>
+          <td>ศธ. / สธ. / อว. / แรงงาน</td>
+          <td>การศึกษา / สุขภาวะ / กีฬา / ฝีมือแรงงาน</td>
+          <td class="num bold">604,806</td>
+          <td>Education &amp; Skill</td>
+        </tr>
+        <tr>
+          <td style="color:#16a34a">ย.3 — แรงงาน</td>
+          <td>3.2.4</td>
+          <td>กรมพัฒนาฝีมือแรงงาน</td>
+          <td>ฝึกทักษะ / จัดหางาน</td>
+          <td class="num">2,204.77</td>
+          <td>Vocational Training</td>
+        </tr>
+        <tr>
+          <td style="color:#0891b2">ย.2 — วิจัย</td>
+          <td>2.8</td>
+          <td>สกสว. / สวทช. / วช. / บพค.</td>
+          <td>กองทุนวิจัยแห่งชาติ</td>
+          <td class="num">19,728.29</td>
+          <td>Research Talent</td>
+        </tr>
+        <tr>
+          <td style="color:#0891b2">ย.2 — Upskill</td>
+          <td>2.9</td>
+          <td>สป.อว.</td>
+          <td>บัณฑิตพันธุ์ใหม่ / Skill Portfolio / Credit Bank</td>
+          <td class="num">21,743.99</td>
+          <td>Upskill/Reskill</td>
+        </tr>
+        <tr>
+          <td style="color:#d97706">ย.4 — สูงวัย</td>
+          <td>4.1.2</td>
+          <td>กรมกิจการผู้สูงอายุ / วิทยาลัยชุมชน</td>
+          <td>ส่งเสริมการมีงานทำ / รองรับสังคมสูงวัย</td>
+          <td class="num">784.67</td>
+          <td>Active Ageing</td>
+        </tr>
+        <tr>
+          <td style="color:#dc2626">ย.4 — เปราะบาง</td>
+          <td>4.3.2</td>
+          <td>สป.พม. / กรมกิจการเด็ก / กิจการผู้สูงอายุ</td>
+          <td>สวัสดิการ / PSO / ที่อยู่อาศัย กลุ่มเปราะบาง</td>
+          <td class="num">13,360.67</td>
+          <td>Social Protection</td>
+        </tr>
+        <tr>
+          <td style="color:#7c3aed">ย.6 — ข้าราชการ</td>
+          <td>6.1.5</td>
+          <td>ก.พ. / ทุกกระทรวง</td>
+          <td>Digital Skills / สมรรถนะข้าราชการ</td>
+          <td class="num">5,211.94</td>
+          <td>Civil Servant Dev.</td>
+        </tr>
+        <tr style="background:var(--bg3)">
+          <td class="bold">รวม HR ทั้งหมด</td>
+          <td colspan="3"></td>
+          <td class="num bold">665,635.56</td>
+          <td><strong>~17.6%</strong> ของงบชาติ</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title" style="margin-top:20px"><div class="dot" style="background:#2563eb"></div>ข้อสังเกตเชิงนโยบาย</div>
+  <div class="grid3">
+    <div class="card-sm" style="border-left:3px solid #2563eb">
+      <div style="font-size:12px;font-weight:600;color:#2563eb;margin-bottom:6px">📌 งบ HR กระจุกตัว</div>
+      <div style="font-size:11.5px;color:var(--text2)">ย.3 คิดเป็น 90.9% ของงบ HR รวม โดยเกือบทั้งหมด (86.8%) อยู่ในแผน 3.2 พัฒนาช่วงชีวิต ซึ่งรวม ปฐมวัย–การศึกษาขั้นพื้นฐานขนาดใหญ่</div>
+    </div>
+    <div class="card-sm" style="border-left:3px solid #0891b2">
+      <div style="font-size:12px;font-weight:600;color:#0891b2;margin-bottom:6px">🔬 R&D Talent สูงกว่า Vocational</div>
+      <div style="font-size:11.5px;color:var(--text2)">ย.2 วิจัย (19,728 ล้าน) > กระทรวงแรงงาน ย.3 (2,205 ล้าน) เกือบ 9 เท่า สะท้อนการเน้นพัฒนากำลังคนทักษะสูงมากกว่าฝีมือแรงงานทั่วไป</div>
+    </div>
+    <div class="card-sm" style="border-left:3px solid #7c3aed">
+      <div style="font-size:12px;font-weight:600;color:#7c3aed;margin-bottom:6px">🏛️ บุคลากรภาครัฐ ได้สัดส่วนน้อย</div>
+      <div style="font-size:11.5px;color:var(--text2)">ย.6.1.5 = 5,212 ล้านบาท คิดเป็น 0.78% ของ HR รวม แต่ครอบคลุมข้าราชการกว่า 100 หน่วยงาน — โครงการ Digital Skills เป็น flagship หลัก</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB 7: TREND 8 YEARS                                         -->
+<!-- ============================================================ -->
+<div id="trend" class="tab-content">
+
+  <!-- KPI summary row -->
+  <div class="grid4" style="margin-bottom:16px">
+    <div class="kpi-box">
+      <div class="kpi-label">ย.3 ปี 2569 (ล่าสุด)</div>
+      <div class="kpi-value" style="color:#16a34a">604,806</div>
+      <div class="kpi-sub">ล้านบาท</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-label">เติบโต 8 ปี (2562→2569)</div>
+      <div class="kpi-value" style="color:#2563eb">+7.8%</div>
+      <div class="kpi-sub">561,134 → 604,806 ล้านบาท</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-label">สัดส่วนต่องบรวม 2569</div>
+      <div class="kpi-value" style="color:#d97706">16.0%</div>
+      <div class="kpi-sub">ลดลงจาก 18.7% ในปี 2562</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-label">งบประมาณรวมประเทศ 2569</div>
+      <div class="kpi-value" style="color:#7c3aed">3.78 ล้านล้าน</div>
+      <div class="kpi-sub">เพิ่มขึ้น 26% จากปี 2562</div>
+    </div>
+  </div>
+
+  <!-- Row 1: ย.3 trend + % share -->
+  <div class="grid2">
+    <div class="card">
+      <div class="chart-title">ยุทธศาสตร์ที่ 3 — งบพัฒนาทรัพยากรมนุษย์ รายปี (ล้านบาท)</div>
+      <div class="chart-wrap chart-h260"><canvas id="ch_y3trend"></canvas></div>
+      <div style="margin-top:10px;font-size:11px;color:var(--text2)">
+        ที่มา: พ.ร.บ. งบประมาณรายจ่าย ฉบับที่ ๔ จำแนกตามยุทธศาสตร์ ปี 2562–2569
+      </div>
+    </div>
+    <div class="card">
+      <div class="chart-title">สัดส่วน ย.3 ต่องบประมาณรวมประเทศ (%)</div>
+      <div class="chart-wrap chart-h260"><canvas id="ch_pcttrend"></canvas></div>
+      <div style="margin-top:10px;font-size:11px;color:#dc2626;font-weight:500">
+        ⚠️ สัดส่วนลดลงต่อเนื่อง แม้มูลค่าสัมบูรณ์เพิ่มขึ้น — งบรวมประเทศโตเร็วกว่า ย.3
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Row 2: Total vs Y3 stacked + 6-strategy comparison -->
+  <div class="grid2">
+    <div class="card">
+      <div class="chart-title">เปรียบเทียบ งบรวมประเทศ vs ย.3 รายปี</div>
+      <div class="chart-wrap chart-h260"><canvas id="ch_tottrend"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="chart-title">งบ 6 ยุทธศาสตร์ เปรียบเทียบ ปี 2567 vs 2568 (ล้านบาท)</div>
+      <div class="chart-wrap chart-h260"><canvas id="ch_6strat"></canvas></div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Year-by-year table -->
+  <div class="section-title"><span class="dot" style="background:#16a34a"></span>ตารางสรุป ย.3 รายปี 2562–2569</div>
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>ปีงบประมาณ</th>
+          <th class="num">ย.3 ทรัพยากรมนุษย์ (ล้านบาท)</th>
+          <th class="num">งบรวมประเทศ (ล้านบาท)</th>
+          <th class="num">สัดส่วน ย.3 (%)</th>
+          <th class="num">เปลี่ยนแปลง YoY</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>2562</td><td class="num">561,134</td><td class="num">3,000,000</td><td class="num">18.7%</td><td class="num">—</td></tr>
+        <tr><td>2563</td><td class="num">567,944</td><td class="num">3,200,000</td><td class="num">17.7%</td><td class="num" style="color:#16a34a">+1.2%</td></tr>
+        <tr><td>2564</td><td class="num">579,388</td><td class="num">3,285,962</td><td class="num">17.6%</td><td class="num" style="color:#16a34a">+2.0%</td></tr>
+        <tr><td>2565</td><td class="num">545,568 *</td><td class="num">3,100,000</td><td class="num">17.6%</td><td class="num" style="color:#dc2626">−5.8%</td></tr>
+        <tr><td>2566</td><td class="num">544,456</td><td class="num">3,185,000</td><td class="num">17.1%</td><td class="num" style="color:#dc2626">−0.2%</td></tr>
+        <tr><td>2567</td><td class="num">561,167</td><td class="num">3,480,000</td><td class="num">16.1%</td><td class="num" style="color:#16a34a">+3.1%</td></tr>
+        <tr><td>2568</td><td class="num">582,704</td><td class="num">3,752,700</td><td class="num">15.5%</td><td class="num" style="color:#16a34a">+3.8%</td></tr>
+        <tr class="highlight"><td><strong>2569</strong></td><td class="num bold" style="color:#16a34a">604,806</td><td class="num bold">3,780,600</td><td class="num bold">16.0%</td><td class="num bold" style="color:#16a34a">+3.8%</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:10.5px;color:var(--text2);margin-top:8px">* ปี 2565: ค่าประมาณจากการสกัดข้อความ PDF (ตัวเลขอาจคลาดเคลื่อนเล็กน้อย) | ที่มา: สำนักงบประมาณ bb.go.th ฉบับที่ ๔ พ.ร.บ. งบประมาณ</div>
+  </div>
+
+  <!-- Key Insights -->
+  <hr class="divider">
+  <div class="section-title"><span class="dot" style="background:#d97706"></span>ข้อสังเกตเชิงนโยบาย</div>
+  <div class="grid3">
+    <div class="card-sm" style="border-left:4px solid #16a34a">
+      <div style="font-size:12px;font-weight:600;color:#16a34a;margin-bottom:6px">มูลค่าสัมบูรณ์เพิ่มขึ้น</div>
+      <div style="font-size:11.5px;color:var(--text2)">ย.3 เพิ่มจาก 561K → 605K ล้านบาท (+7.8%) ใน 8 ปี แต่ช้ากว่างบรวมประเทศที่โต +26%</div>
+    </div>
+    <div class="card-sm" style="border-left:4px solid #dc2626">
+      <div style="font-size:12px;font-weight:600;color:#dc2626;margin-bottom:6px">สัดส่วนหดตัวต่อเนื่อง</div>
+      <div style="font-size:11.5px;color:var(--text2)">สัดส่วน ย.3 ลดจาก 18.7% (2562) → 15.5% (2568) สะท้อนการจัดลำดับความสำคัญที่เปลี่ยนไป</div>
+    </div>
+    <div class="card-sm" style="border-left:4px solid #d97706">
+      <div style="font-size:12px;font-weight:600;color:#d97706;margin-bottom:6px">จุดต่ำสุดปี 2565–2566</div>
+      <div style="font-size:11.5px;color:var(--text2)">งบ ย.3 ลดเป็น 544–546K ล้าน อาจสะท้อนผลกระทบหลัง COVID-19 ต่อการจัดสรรงบด้าน HR</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============================================================ -->
+<!-- SCRIPTS                                                      -->
+<!-- ============================================================ -->
+<script>
+const TC='#5a6282', GC='rgba(0,0,0,.06)';
+const PAL=['#16a34a','#2563eb','#7c3aed','#ea580c','#d97706','#0891b2','#dc2626','#b45309','#0d9488'];
+
+function showTab(id,btn){
+  document.querySelectorAll('.tab-content').forEach(e=>e.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+const cfg={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' '+ctx.raw.toLocaleString()+' ล้านบาท'}}}};
+const cfgLeg={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:TC,font:{size:10,family:'Kanit'},boxWidth:10,padding:6}},tooltip:{callbacks:{label:ctx=>{const t=ctx.chart.data.datasets[0].data.reduce((a,b)=>a+b,0);return ' '+ctx.raw.toLocaleString()+' ล้านบาท ('+Math.round(ctx.raw/t*100)+'%)';}}}}};
+
+// ---- TAB 1 ----
+new Chart(document.getElementById('ch_y3plans'),{
+  type:'doughnut',
+  data:{
+    labels:['3.2 พัฒนาช่วงชีวิต','3.3 การเรียนรู้','3.4 สุขภาวะ','3.5 กีฬา','3.1 ค่านิยม'],
+    datasets:[{data:[524773.93,40413.14,29721.23,6500.89,3396.56],backgroundColor:['#16a34a','#2563eb','#7c3aed','#ea580c','#d97706'],borderWidth:2,borderColor:'#fff'}]
+  },
+  options:{...cfgLeg,plugins:{...cfgLeg.plugins,legend:{...cfgLeg.plugins.legend,position:'right'}},cutout:'58%'}
+});
+
+new Chart(document.getElementById('ch_allhr'),{
+  type:'doughnut',
+  data:{
+    labels:['ย.3 พัฒนาทรัพยากรมนุษย์','ย.2 วิจัย (2.8)','ย.2 Upskill (2.9)','ย.4 กลุ่มเปราะบาง','ย.4 สูงวัย','ย.6 บุคลากรภาครัฐ'],
+    datasets:[{data:[604805.75,19728.29,21743.99,13360.67,784.67,5211.94],backgroundColor:['#16a34a','#0891b2','#3b82f6','#dc2626','#d97706','#7c3aed'],borderWidth:2,borderColor:'#fff'}]
+  },
+  options:{...cfgLeg,plugins:{...cfgLeg.plugins,legend:{...cfgLeg.plugins.legend,position:'right'}},cutout:'56%'}
+});
+
+// ---- TAB 2 ----
+new Chart(document.getElementById('ch_y3age'),{
+  type:'bar',
+  data:{
+    labels:['3.2.1 ปฐมวัย','3.2.2 วัยเด็ก','3.2.3 วัยเรียน','3.2.4 วัยแรงงาน'],
+    datasets:[{label:'ล้านบาท',data:[474938.12,12200.85,30986.39,6648.54],backgroundColor:['#16a34a','#22c55e','#4ade80','#86efac'],borderRadius:6,borderWidth:0}]
+  },
+  options:{...cfg,plugins:{...cfg.plugins,legend:{display:false}},scales:{x:{ticks:{color:TC,font:{family:'Kanit',size:10}},grid:{color:GC}},y:{ticks:{color:TC,font:{family:'Kanit',size:10},callback:v=>v.toLocaleString()},grid:{color:GC}}}}
+});
+
+new Chart(document.getElementById('ch_y3age_d'),{
+  type:'doughnut',
+  data:{
+    labels:['ปฐมวัย','วัยเด็ก','วัยเรียน','วัยแรงงาน'],
+    datasets:[{data:[474938.12,12200.85,30986.39,6648.54],backgroundColor:['#16a34a','#22c55e','#4ade80','#86efac'],borderWidth:2,borderColor:'#fff'}]
+  },
+  options:{...cfgLeg,plugins:{...cfgLeg.plugins,legend:{...cfgLeg.plugins.legend,position:'right'}},cutout:'55%'}
+});
+
+new Chart(document.getElementById('ch_labour'),{
+  type:'bar',
+  data:{
+    labels:['กรมพัฒนาฝีมือแรงงาน','สป.รง.','กรมจัดหางาน','กรมสวัสดิการฯ'],
+    datasets:[{label:'ล้านบาท',data:[1214.10,644.29,329.99,16.37],backgroundColor:['#0891b2','#38bdf8','#7dd3fc','#bae6fd'],borderRadius:6,borderWidth:0}]
+  },
+  options:{...cfg,plugins:{...cfg.plugins,legend:{display:false}},scales:{x:{ticks:{color:TC,font:{family:'Kanit',size:10}},grid:{color:GC}},y:{ticks:{color:TC,font:{family:'Kanit',size:10},callback:v=>v.toLocaleString()},grid:{color:GC}}}}
+});
+
+new Chart(document.getElementById('ch_dsd'),{
+  type:'doughnut',
+  data:{
+    labels:['ฝึกอบรมทักษะฝีมือ','ทดสอบมาตรฐาน','ยกระดับ Upskill','บริหาร/นโยบาย'],
+    datasets:[{data:[800,150,200,64.10],backgroundColor:['#0891b2','#38bdf8','#7dd3fc','#bae6fd'],borderWidth:2,borderColor:'#fff'}]
+  },
+  options:{...cfgLeg,plugins:{...cfgLeg.plugins,legend:{...cfgLeg.plugins.legend,position:'right'}},cutout:'55%'}
+});
+
+// ---- TAB 3 ----
+new Chart(document.getElementById('ch_y2rd'),{
+  type:'bar',
+  data:{
+    labels:['สกสว.+วช.+บพค.','สวทช.','สป.อว.','สนช.'],
+    datasets:[{label:'ล้านบาท',data:[17141,2019.34,459.45,107.50],backgroundColor:['#0891b2','#22d3ee','#67e8f9','#a5f3fc'],borderRadius:6,borderWidth:0}]
+  },
+  options:{...cfg,plugins:{...cfg.plugins,legend:{display:false}},scales:{x:{ticks:{color:TC,font:{family:'Kanit',size:10}},grid:{color:GC}},y:{ticks:{color:TC,font:{family:'Kanit',size:10},callback:v=>v.toLocaleString()},grid:{color:GC}}}}
+});
+
+new Chart(document.getElementById('ch_y2upskill'),{
+  type:'bar',
+  data:{
+    labels:['EEC/อุตสาหกรรม','Skill Portfolio','บัณฑิตพันธุ์ใหม่','Credit Bank'],
+    datasets:[{label:'ล้านบาท',data:[20313.37,773.39,557.23,100.00],backgroundColor:['#2563eb','#60a5fa','#93c5fd','#bfdbfe'],borderRadius:6,borderWidth:0}]
+  },
+  options:{...cfg,plugins:{...cfg.plugins,legend:{display:false}},scales:{x:{ticks:{color:TC,font:{family:'Kanit',size:10}},grid:{color:GC}},y:{ticks:{color:TC,font:{family:'Kanit',size:10},callback:v=>v.toLocaleString()},grid:{color:GC}}}}
+});
+
+// ---- TAB 4 ----
+new Chart(document.getElementById('ch_y4aging'),{
+  type:'bar',
+  data:{
+    labels:['วิทยาลัยชุมชน (อว.)','กรมกิจการผู้สูงอายุ','สธ.'],
+    datasets:[{label:'ล้านบาท',data:[727.75,127.75,37.73],backgroundColor:['#d97706','#f59e0b','#fcd34d'],borderRadius:6,borderWidth:0}]
+  },
+  options:{...cfg,plugins:{...cfg.plugins,legend:{display:false}},scales:{x:{ticks:{color:TC,font:{family:'Kanit',size:10}},grid:{color:GC}},y:{ticks:{color:TC,font:{family:'Kanit',size:10},callback:v=>v.toLocaleString()},grid:{color:GC}}}}
+});
+
+new Chart(document.getElementById('ch_y4vul'),{
+  type:'bar',
+  data:{
+    labels:['กรมกิจการเด็กฯ','สป.พม.','กรมกิจการผู้สูงอายุ','กรมพัฒนาสังคม','กรมส่งเสริมคนพิการ','กรมกิจการสตรีฯ'],
+    datasets:[{label:'ล้านบาท',data:[759.75,465.79,723.47,47.24,39.37,24.52],backgroundColor:['#dc2626','#ef4444','#f87171','#fca5a5','#fecaca','#fee2e2'],borderRadius:6,borderWidth:0}]
+  },
+  options:{...cfg,plugins:{...cfg.plugins,legend:{display:false}},scales:{x:{ticks:{color:TC,font:{family:'Kanit',size:9},maxRotation:30}},y:{ticks:{color:TC,font:{family:'Kanit',size:10},callback:v=>v.toLocaleString()},grid:{color:GC}}}}
+});
+
+// ---- TAB 5 ----
+new Chart(document.getElementById('ch_y6hr'),{
+  type:'bar',
+  data:{
+    labels:['ก.พ.','ดิจิทัลทุกหน่วยงาน*','สป.พม.','สป.พาณิชย์','สถาบันพระปกเกล้า','ส.ป.ก.','กรมกิจการเด็กฯ'],
+    datasets:[{label:'ล้านบาท',data:[950,4182.35,25.29,20.75,12.78,9.03,5.77],backgroundColor:['#7c3aed','#a78bfa','#c4b5fd','#ddd6fe','#ede9fe','#c4b5fd','#a78bfa'],borderRadius:6,borderWidth:0}]
+  },
+  options:{...cfg,plugins:{...cfg.plugins,legend:{display:false}},indexAxis:'y',scales:{x:{ticks:{color:TC,font:{family:'Kanit',size:10},callback:v=>v.toLocaleString()},grid:{color:GC}},y:{ticks:{color:TC,font:{family:'Kanit',size:10}}}}}
+});
+
+// ---- TAB 6 ----
+new Chart(document.getElementById('ch_compare'),{
+  type:'bar',
+  data:{
+    labels:['ย.3 รวม','ย.2 วิจัย\n(2.8)','ย.2 Upskill\n(2.9)','ย.4 เปราะบาง\n(4.3.2)','ย.6 ข้าราชการ\n(6.1.5)','ย.4 สูงวัย\n(4.1.2)'],
+    datasets:[{label:'ล้านบาท',data:[604805.75,19728.29,21743.99,13360.67,5211.94,784.67],backgroundColor:['#16a34a','#0891b2','#2563eb','#dc2626','#7c3aed','#d97706'],borderRadius:6,borderWidth:0}]
+  },
+  options:{...cfg,plugins:{...cfg.plugins,legend:{display:false}},scales:{x:{ticks:{color:TC,font:{family:'Kanit',size:9},maxRotation:20}},y:{ticks:{color:TC,font:{family:'Kanit',size:10},callback:v=>v>=1000?Math.round(v/1000)+'k':v.toLocaleString()},grid:{color:GC}}}}
+});
+
+new Chart(document.getElementById('ch_compare_d'),{
+  type:'doughnut',
+  data:{
+    labels:['ย.3 พัฒนาทรัพยากรมนุษย์','ย.2 Upskill (2.9)','ย.2 วิจัย (2.8)','ย.4 เปราะบาง','ย.6 บุคลากรภาครัฐ','ย.4 สูงวัย'],
+    datasets:[{data:[604805.75,21743.99,19728.29,13360.67,5211.94,784.67],backgroundColor:['#16a34a','#2563eb','#0891b2','#dc2626','#7c3aed','#d97706'],borderWidth:2,borderColor:'#fff'}]
+  },
+  options:{...cfgLeg,plugins:{...cfgLeg.plugins,legend:{...cfgLeg.plugins.legend,position:'right'}},cutout:'55%'}
+});
+
+
+// ===== TAB 7: TREND =====
+const trendYears = ['2562','2563','2564','2565','2566','2567','2568','2569'];
+
+// ย.3 total per year (ล้านบาท) — from พ.ร.บ.งบประมาณ ฉบับที่ ๔ ทุกปี
+const y3vals  = [561134.40, 567944.05, 579388.33, 545568.36, 544455.50, 561167.01, 582704.15, 604805.75];
+const totals  = [3000000, 3200000, 3285962, 3100000, 3185000, 3480000, 3752700, 3780600];
+const pctY3   = y3vals.map((v,i)=>+(v/totals[i]*100).toFixed(2));
+
+// 6-Strategy breakdown: 2568 vs 2569
+const strats  = ['ย.1 ความมั่นคง','ย.2 แข่งขัน','ย.3 ทรัพยากรมนุษย์','ย.4 โอกาส–เสมอภาค','ย.5 สิ่งแวดล้อม','ย.6 ภาครัฐ'];
+const s2568   = [403868.04, 362199.85, 582704.15, 926266.77, 136851.28, 645499.53];
+const s2569   = [null, null, 604805.75, null, null, null]; // only y3 confirmed for 2569
+const s2567   = [386149.67, 392028.61, 561167.01, 836382.50, 131020.49, 608210.51];
+
+// Chart: ย.3 trend line
+new Chart(document.getElementById('ch_y3trend'),{
+  type:'line',
+  data:{
+    labels:trendYears,
+    datasets:[{
+      label:'ย.3 ทรัพยากรมนุษย์ (ล้านบาท)',
+      data:y3vals,
+      borderColor:'#16a34a',fill:true,
+      backgroundColor:'rgba(22,163,74,.10)',
+      pointBackgroundColor:'#16a34a',pointRadius:5,pointHoverRadius:7,
+      tension:.35,borderWidth:2.5
+    }]
+  },
+  options:{...cfg,
+    plugins:{...cfg.plugins,legend:{display:false}},
+    scales:{
+      x:{ticks:{color:TC,font:{family:'Kanit',size:11}}},
+      y:{ticks:{color:TC,font:{family:'Kanit',size:10},
+          callback:v=>(v/1000).toFixed(0)+'k'},
+         grid:{color:GC},
+         title:{display:true,text:'ล้านบาท',color:TC,font:{family:'Kanit',size:10}}}
+    }
+  }
+});
+
+// Chart: Total budget trend bar
+new Chart(document.getElementById('ch_tottrend'),{
+  type:'bar',
+  data:{
+    labels:trendYears,
+    datasets:[
+      {label:'งบรวมประเทศ',data:totals,backgroundColor:'rgba(37,99,235,.15)',borderColor:'#2563eb',borderWidth:1.5,borderRadius:4,yAxisID:'y'},
+      {label:'ย.3 พัฒนามนุษย์',data:y3vals,backgroundColor:'rgba(22,163,74,.7)',borderRadius:4,yAxisID:'y'}
+    ]
+  },
+  options:{...cfg,
+    plugins:{...cfg.plugins,legend:{display:true,labels:{font:{family:'Kanit',size:11},color:TC,boxWidth:12}}},
+    scales:{
+      x:{ticks:{color:TC,font:{family:'Kanit',size:11}}},
+      y:{ticks:{color:TC,font:{family:'Kanit',size:10},callback:v=>(v/1000).toFixed(0)+'k'},
+         grid:{color:GC},stacked:false}
+    }
+  }
+});
+
+// Chart: % share of ย.3
+new Chart(document.getElementById('ch_pcttrend'),{
+  type:'bar',
+  data:{
+    labels:trendYears,
+    datasets:[{
+      label:'สัดส่วน ย.3 ต่องบรวม (%)',
+      data:pctY3,
+      backgroundColor:pctY3.map((v,i)=>i===7?'#16a34a':'rgba(22,163,74,.55)'),
+      borderRadius:5,borderWidth:0
+    }]
+  },
+  options:{...cfg,
+    plugins:{...cfg.plugins,legend:{display:false},
+      datalabels:{display:false}},
+    scales:{
+      x:{ticks:{color:TC,font:{family:'Kanit',size:11}}},
+      y:{min:14,max:20,
+         ticks:{color:TC,font:{family:'Kanit',size:10},callback:v=>v+'%'},
+         grid:{color:GC}}
+    }
+  }
+});
+
+// Chart: 6-strategy grouped bar 2567 vs 2568
+new Chart(document.getElementById('ch_6strat'),{
+  type:'bar',
+  data:{
+    labels:strats,
+    datasets:[
+      {label:'2567',data:s2567,backgroundColor:'rgba(100,116,139,.5)',borderRadius:3,borderWidth:0},
+      {label:'2568',data:s2568,backgroundColor:['rgba(239,68,68,.7)','rgba(8,145,178,.7)','rgba(22,163,74,.85)','rgba(217,119,6,.7)','rgba(16,185,129,.7)','rgba(124,58,237,.7)'],borderRadius:4,borderWidth:0}
+    ]
+  },
+  options:{...cfg,
+    plugins:{...cfg.plugins,legend:{display:true,labels:{font:{family:'Kanit',size:11},color:TC,boxWidth:12}}},
+    scales:{
+      x:{ticks:{color:TC,font:{family:'Kanit',size:10},maxRotation:15}},
+      y:{ticks:{color:TC,font:{family:'Kanit',size:10},callback:v=>(v/1000).toFixed(0)+'k'},grid:{color:GC}}
+    }
+  }
+});
+
+</script>
+</body>
+</html>
